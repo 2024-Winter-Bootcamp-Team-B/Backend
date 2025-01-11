@@ -102,3 +102,43 @@ class Chat(Base):
     is_deleted = Column(Boolean, nullable=False, default=False)
 
     chatroom = relationship("Chatroom", back_populates="chats")
+
+# -----------------------------------------------------
+# 여기서부터 우리 꺼 -------------------------------------------------------
+class History(Base):
+    __tablename__ = "history"
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True, nullable=False)
+    user_id = Column(Integer, ForeignKey("user.id"), nullable=False)
+    start_time = Column(DateTime, nullable=False)
+    goal_time = Column(DateTime, nullable=False)
+    end_time = Column(DateTime, nullable=True)
+
+    is_deleted = Column(Boolean, nullable=False, default=False)
+    created_at = Column(DateTime, nullable=False, default=lambda: DateTime.now(KST))
+    updated_at = Column(DateTime, nullable=False, default=lambda: datetime.now(KST))
+
+
+
+class User(Base):
+    __tablename__ = "user"
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True, nullable=False)
+    is_deleted = Column(Boolean, nullable=False, default=False)
+    created_at = Column(DateTime, nullable=False, default=lambda: datetime.now(KST))
+    updated_at = Column(DateTime, nullable=True)
+    email = Column(String(30), nullable=False)
+    
+
+class Lock(Base):
+    __tablename__ = "lock"
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True, nullable=False)
+    user_id = Column(Integer, ForeignKey("user.id"), nullable=False)
+    is_deleted = Column(Boolean, nullable=True, default=False)
+    goal_time = Column(DateTime, nullable=False)
+    created_at = Column(DateTime, nullable=False, default=lambda: DateTime.now(KST))
+    site_id = Column(Integer, ForeignKey("site.id"), nullable=False)
+
+class Site(Base):
+    __tablename__ = "site"
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True, nullable=False)
+    url = Column(String(300), nullable=False)
+    blocked_cnt = Column(Integer, nullable=True, default=0)
