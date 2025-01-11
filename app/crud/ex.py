@@ -12,6 +12,5 @@ def create_user(db: Session, user: UserCreate):
 def get_user(db: Session, user_id: int):
     return db.query(User_Test).filter(User_Test.id == user_id).first()
 
-# feat/#10 : 통계정보 가져오기
-def get_user_history(db : Session, user_id : int):
+
 

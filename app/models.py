@@ -103,26 +103,3 @@ class Chat(Base):
 
     chatroom = relationship("Chatroom", back_populates="chats")
 
-# 여기서부터 우리 꺼 -------------------------------------------------------
-class History(Base):
-    __tablename__ = "history"
-    id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey(""), nullable=False)
-    start_time = Column(DateTime, nullable=False)
-    goal_time = Column(DateTime, nullable=False)
-    end_time = Column(DateTime, nullable=True)
-
-    is_deleted = Column(Boolean, nullable=False, default=False)
-    created_at = Column(DateTime, nullable=False, default=lambda: DateTime.now(KST))
-    updated_at = Column(DateTime, nullable=False, default=lambda: datetime.now(KST))
-
-
-
-class User(Base):
-    __tablename__ = "user"
-    id = Column(Integer, primary_key=True)
-    is_deleted = Column(Boolean, nullable=False, default=False)
-    created_at = Column(DateTime, nullable=False, default=lambda: datetime.now(KST))
-    updated_at = Column(DateTime, nullable=True)
-    email = Column(String(30), nullable=False)
-
