@@ -65,3 +65,5 @@ def analyze_image(image_path: str, requested_hand_shape: list):
                 return {"match": False, "message": "손 모양이 요청한 모양과 다릅니다."}
 
     return {"match": False, "message": "손이 감지되지 않았습니다."} # 손이 감지되지 않은 경우
+
+print("hello world")
