@@ -13,8 +13,8 @@ Base = declarative_base()
 KST = pytz.timezone("Asia/Seoul")
 
 
-class User(Base):
-    __tablename__ = "user"
+class User_test(Base):
+    __tablename__ = "user_test"
     id = Column(Integer, primary_key=True)
     nickname = Column(String(50), nullable=False)
     created_at = Column(DateTime, nullable=False, default=lambda: datetime.now(KST))
@@ -26,8 +26,8 @@ class User(Base):
     )
     is_deleted = Column(Boolean, nullable=False, default=False)
 
-    prescriptions = relationship("Prescription", back_populates="user")
-    chatrooms = relationship("Chatroom", back_populates="user")
+    prescriptions = relationship("Prescription", back_populates="user_test")
+    chatrooms = relationship("Chatroom", back_populates="user_test")
 
 
 class Mentor(Base):

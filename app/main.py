@@ -22,7 +22,7 @@ FastAPI인스턴스를 생성하고, 라우터를 등록하며 애플리케이�
 
 from fastapi import FastAPI
 from app.routers.image_api import router as image_router
-
+from app.routers.history_api import router as history_router
 app = FastAPI()
 
 # 사용자가 이미지를 입력하면 그 이미지를 서버에 업로드하고, 
@@ -31,3 +31,4 @@ app = FastAPI()
 
 # 라우터 등록
 app.include_router(image_router)
+app.include_router(history_router)
