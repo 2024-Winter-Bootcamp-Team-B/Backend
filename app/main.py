@@ -14,10 +14,10 @@ FastAPI인스턴스를 생성하고, 라우터를 등록하며 애플리케이�
 # app.include_router(prescription.router, prefix="/prescriptions")
 # app.include_router(root.router, prefix="")
 
-
 # @app.get("/openapi.json", include_in_schema=False)
 # async def openapi(_: str = Depends(root.get_admin)):
 #     return get_openapi(title=app.title, version=app.version, routes=app.routes)
+
 
 
 from fastapi import FastAPI

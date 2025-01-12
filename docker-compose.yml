@@ -1,0 +1,55 @@
+services:
+  # FastAPI 서버
+  fastapi:
+    image: python:3.10-slim
+    container_name: fastapi_server
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+    working_dir: /app
+    command: >
+      sh -c "apt-get update && 
+             apt-get install -y libgl1 libglib2.0-0 && 
+             pip install --no-cache-dir -r requirements.txt && 
+             uvicorn app.main:app --host 0.0.0.0 --port 8000"
+    environment:
+      - BROKER_URL=amqp://guest:guest@rabbitmq//
+    depends_on:
+      - rabbitmq
+      - redis
+
+  # RabbitMQ
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"  # AMQP 포트
+      - "15672:15672"  # RabbitMQ 관리 콘솔 포트
+
+  # Redis (결과 저장소)
+  redis:
+    image: redis:alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+
+  # Celery 워커
+  celery:
+    image: python:3.10-slim
+    container_name: celery_worker
+    volumes:
+      - .:/app
+    working_dir: /app
+    command: >
+      sh -c "apt-get update && 
+             apt-get install -y libgl1 && 
+             pip install --no-cache-dir -r requirements.txt &&
+             celery -A app.celery_app worker --loglevel=info"
+    environment:
+      - BROKER_URL=amqp://guest:guest@rabbitmq//
+      - RESULT_BACKEND=redis://redis:6379/0
+    depends_on:
+      - rabbitmq
+      - redis
+
