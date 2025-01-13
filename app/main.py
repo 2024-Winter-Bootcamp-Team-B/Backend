@@ -23,6 +23,17 @@ FastAPI인스턴스를 생성하고, 라우터를 등록하며 애플리케이�
 from fastapi import FastAPI
 from app.routers.image_api import router as image_router
 from app.routers.history_api import router as history_router
+from app.models import Base
+from app.database import engine
+
+
+# 데이터베이스 테이블 생성
+def init_db():
+    Base.metadata.create_all(bind=engine)
+    print("데이터베이스 테이블이 생성되었습니다.")
+
+
+
 app = FastAPI()
 
 # 사용자가 이미지를 입력하면 그 이미지를 서버에 업로드하고, 
@@ -32,3 +43,5 @@ app = FastAPI()
 # 라우터 등록
 app.include_router(image_router)
 app.include_router(history_router)
+
+init_db()
