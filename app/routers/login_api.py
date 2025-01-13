@@ -107,10 +107,8 @@ async def handle_google_token(request: Request, db: Session = Depends(get_db)):
         
         # 이미 회원가입한 사람
         if user :
-            print(7)
             print(f" User already exists: {user.email}")
         else :
-            print(6)
             new_user = User(
                 email = user_info["email"],
                 created_at = datetime.now()
