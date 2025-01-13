@@ -28,6 +28,7 @@ from app.routers.blockedSiteCheck_api import router as blocked_site_router
 from app.routers.site_api import router as site_router
 from app.routers.login_api import router as login_router
 from app.routers.block_api import router as block_router
+from app.routers.unblock_api import router as unblock_router
 
 
 from app.models import Base
@@ -66,6 +67,8 @@ app.include_router(blocked_site_router, prefix="/lock", tags=["Blocked Sites"])
 app.include_router(site_router)
 app.include_router(login_router)
 app.include_router(block_router)
+app.include_router(unblock_router, prefix="/lock", tags=["Blocked Sites"])
+
 
 @app.get("/index", response_class=HTMLResponse)
 async def serve_index():

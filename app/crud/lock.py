@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
 from app.models import Lock, Site
 
+# 차단되어 있는 사이트 목록 조회할 때 사용하는 함수
 def get_blocked_sites(db: Session, user_id: int):
     """
     특정 사용자가 차단한 사이트 목록을 반환
@@ -11,3 +12,11 @@ def get_blocked_sites(db: Session, user_id: int):
         .filter(Lock.user_id == user_id, Lock.is_deleted == False) # 조인한 결과를 필터링
         .all() # 조회한 데이터를 리스트로 반환
     )
+
+# 차단해제하기 할 때 사용하는 함수
+def unblock_sites_by_user(db: Session, user_id: int):
+    """
+    특정 사용자의 차단 사이트를 DB에서 삭제
+    """
+    db.query(Lock).filter(Lock.user_id == user_id).delete()
+    db.commit()
