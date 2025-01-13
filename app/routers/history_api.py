@@ -1,72 +1,53 @@
 from datetime import datetime
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from fastapi.responses import JSONResponse
-
+from app.database import SessionLocal
 from app.models import History
 from sqlalchemy.orm import Session
 
 router = APIRouter()
 
+def get_db():
+    db = SessionLocal()
+    try :
+        yield db
+    finally :
+        db.close()
+
 @router.get("/statistic/{user_id}")
-async def get_histories(user_id: str):
-    print("statistic")
-    """
-    사용자의 통계 정보를 반환
-    [예시] 
-    [
-        {
-            "message": "성공",
-            "user_id": 1,
-            "start_time": "2023-01-11T10:00:00",
-            "goal_time": "2023-01-11T11:00:00",
-            "end_time": null
-        },
-        {
-            "message": "성공",
-            "user_id": 1,
-            "start_time": "2023-01-11T12:00:00",
-            "goal_time": "2023-01-11T13:00:00",
-            "end_time": "2023-01-11T12:45:00"
-        }
-    ]
-    """
+async def get_histories(user_id: int, db: Session = Depends(get_db)):
+    
     try :
         # 디비에서 찾아옴 
-        # histories = db.query(History).filter(History.user_id == user_id).all()
-        histories = [
-            {
-                "user_id": user_id,
-                "start_time": datetime(2023, 1, 11, 10, 0, 0),
-                "goal_time": datetime(2023, 1, 11, 10, 0, 0),
-                "end_time": None,
-            },
-            {
-                "user_id": user_id,
-                "start_time": datetime(2023, 1, 11, 10, 0, 0),
-                "goal_time": datetime(2023, 1, 11, 10, 0, 0),
-                "end_time": datetime(2023, 1, 11, 10, 0, 0),
-            },
-        ]
+        histories = db.query(History).filter(History.user_id == user_id).all()
 
-        # 사용자의 기록이 없는 경우
+        
+        # 기록이 없을 경우
         if not histories:
             return JSONResponse(
-                status_code=400,
-                content={
-                    "message" : "실패"
-                }
+                status_code=200,
+                content={"message": "기록이 없습니다."}
             )
+
+        # 결과 데이터 구성
         result = [
             {
-                "message": "성공",
-                "userID": user_id,
-                "startTime": history["start_time"],  
-                "endTime": history["end_time"],
-                "goalTime": history["goal_time"],
+                "user_id": history.user_id,
+                "start_time": history.start_time.isoformat(),  # datetime -> 문자열로 변환
+                "end_time": history.end_time.isoformat() if history.end_time else None,
+                "goal_time": history.goal_time.isoformat(),
             }
-            for history in histories 
+            for history in histories
         ]
-        return result
+
+        # 성공 응답 반환
+        return JSONResponse(
+            status_code=200,
+            content={
+                "message": "성공",
+                "result": result
+            }
+        )
 
     except Exception as e :
         return JSONResponse(
