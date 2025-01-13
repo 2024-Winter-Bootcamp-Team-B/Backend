@@ -13,7 +13,6 @@ Base = declarative_base()
 KST = pytz.timezone("Asia/Seoul")
 
 # -----------------------------------------------------
-# 여기서부터 우리 꺼 -------------------------------------------------------
 class History(Base):
     __tablename__ = "history"
     id = Column(Integer, primary_key=True, index=True, autoincrement=True, nullable=False)
@@ -26,8 +25,6 @@ class History(Base):
     created_at = Column(DateTime, nullable=False, default=lambda: DateTime.now(KST))
     updated_at = Column(DateTime, nullable=False, default=lambda: datetime.now(KST))
 
-
-
 class User(Base):
     __tablename__ = "user"
     id = Column(Integer, primary_key=True, index=True, autoincrement=True, nullable=False)
@@ -35,7 +32,6 @@ class User(Base):
     created_at = Column(DateTime, nullable=False, default=lambda: datetime.now(KST))
     updated_at = Column(DateTime, nullable=True)
     email = Column(String(30), nullable=False)
-    
 
 class Lock(Base):
     __tablename__ = "lock"

@@ -6,6 +6,7 @@
 
 from pydantic import BaseModel
 from datetime import datetime 
+from typing import List
 
 '''
 class User_test(Base):
@@ -107,6 +108,11 @@ class SiteUpdate(SiteBase):
 class SiteResponse(SiteBase):
     blocked_cnt : int
 
+# 차단된 사이트 목록 스키마
+class BlockedSitesResponse(BaseModel):
+    user_id: int
+    blocked_sites: List[SiteResponse]
+
 # ---------------------------history table (진) ------------------------ 
 '''
 class History(Base):
@@ -138,45 +144,3 @@ class HistoryResponse(HistoryBase):
     
 
 
-
-class ChatroomCreate(BaseModel):
-    user_id: int
-    mentor_id: int
-
-
-class ChatroomResponse(BaseModel):
-    id: int
-    user_id: int
-    mentor_id: int
-    created_at: datetime.datetime
-    updated_at: datetime.datetime
-
-
-class MentorBase(BaseModel):
-    name: str
-    description: str
-
-
-class MentorCreate(MentorBase):
-    pass
-
-
-class MentorResponse(MentorBase):
-    id: int
-    created_at: datetime.datetime
-    updated_at: datetime.datetime
-
-
-class PrescriptionResponse(BaseModel):
-    id: int
-    user_id: int
-    mentor_id: int
-    content: str
-    created_at: datetime.datetime
-    updated_at: datetime.datetime
-
-
-class PrescriptionCreate(BaseModel):
-    user_id: int
-    mentor_id: int
-    content: str
