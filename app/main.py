@@ -44,7 +44,7 @@ app = FastAPI()
 # 라우터 등록
 app.include_router(image_router)
 app.include_router(history_router)
-app.include_router(blocked_site_router, prefix="/api/v1/lock", tags=["Blocked Sites"])
+app.include_router(blocked_site_router, prefix="/lock", tags=["Blocked Sites"])
 
 
 init_db()

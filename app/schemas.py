@@ -50,8 +50,8 @@ ex
 '''
 class UserResponse(UserBase):
     id: int
-    created_at: datetime.datetime
-    updated_at: datetime.datetime
+    created_at: datetime
+    updated_at: datetime
 
 
 # ---------------------------user table (진) ------------------------
@@ -137,10 +137,10 @@ class HistoryUpdate(HistoryBase):
     pass
 
 class HistoryResponse(HistoryBase):
-    start_time : datetime.datetime
-    goal_time : datetime.datetime
-    end_time : datetime.datetime
-    created_at : datetime.datetime
+    start_time : datetime
+    goal_time : datetime
+    end_time : datetime
+    created_at : datetime
     
 
 
