@@ -57,17 +57,15 @@ async def auth_callback(request: Request):
     """
     Google OAuth 콜백 처리
     """
-    print(1)
     try:
         # 액세스 토큰 발급
-        print(2)
         token = await google.authorize_access_token(request)
         if not token:
             raise HTTPException(status_code=400, detail="Failed to fetch access token.")
-        print(3)
         # 사용자 정보 요청
         user_info = await google.get("userinfo", token=token)
         user_data = user_info.json()
+
        
         return JSONResponse(
             status_code=200,
