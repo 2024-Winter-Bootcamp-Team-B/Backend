@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Login</title>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script>
+        function handleCredentialResponse(response) {
+            console.log("Encoded JWT ID token: " + response.credential);
+
+            // 서버로 토큰을 전송하는 로직
+            fetch('/auth/google-token', {
+                method: 'POST',  // 반드시 POST 메서드 사용
+                headers: { 'Content-Type': 'application/json' },  // JSON 형식 지정
+                body: JSON.stringify({ token: response.credential }) // 토큰 데이터를 JSON으로 전달
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log("Server Response:", data);
+                document.getElementById('output').innerText = `Server Response: ${JSON.stringify(data)}`;
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                document.getElementById('output').innerText = `Error: ${error}`;
+            });
+        }
+
+
+        window.onload = function () {
+            google.accounts.id.initialize({
+            client_id: "434332528362-rsj4fe6ngkoo3r5b87r00a95dlava6a3.apps.googleusercontent.com",
+            callback: handleCredentialResponse
+        });
+
+
+            google.accounts.id.renderButton(
+                document.getElementById("buttonDiv"),
+                { theme: "outline", size: "large" } // 버튼 스타일
+            );
+        };
+    </script>
+</head>
+<body>
+    <h1>Google Login Demo</h1>
+    <div id="buttonDiv"></div> <!-- Google 로그인 버튼이 렌더링될 위치 -->
+    <div id="output" style="margin-top: 20px; color: blue;"></div> <!-- 결과 출력 -->
+</body>
+</html>
