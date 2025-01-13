@@ -1,0 +1,25 @@
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.orm import Session
+from app.database import get_db
+from app.crud.lock import get_blocked_sites
+from app.schemas import BlockedSitesResponse
+
+router = APIRouter()
+
+@router.get("/blocked-site/{user_id}", response_model=BlockedSitesResponse)
+def read_blocked_sites(user_id: int, db: Session = Depends(get_db)):
+    """
+    특정 사용자가 차단한 사이트 목록을 반환
+    """
+    # 데이터베이스에서 차단된 사이트 조회
+    sites = get_blocked_sites(db, user_id)
+    
+    # 차단된 사이트가 없으면 404 에러 반환
+    if not sites:
+        raise HTTPException(status_code=404, detail="No blocked sites found for this user")
+    
+    # 응답 생성
+    return {
+        "user_id": user_id,
+        "blocked_sites": sites
+    }

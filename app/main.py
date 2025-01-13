@@ -23,6 +23,7 @@ FastAPI인스턴스를 생성하고, 라우터를 등록하며 애플리케이�
 from fastapi import FastAPI
 from app.routers.image_api import router as image_router
 from app.routers.history_api import router as history_router
+from app.routers.blockedSiteCheck_api import router as blocked_site_router
 from app.models import Base
 from app.database import engine
 
@@ -43,5 +44,7 @@ app = FastAPI()
 # 라우터 등록
 app.include_router(image_router)
 app.include_router(history_router)
+app.include_router(blocked_site_router, prefix="/lock", tags=["Blocked Sites"])
+
 
 init_db()
