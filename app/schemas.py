@@ -135,7 +135,6 @@ class HistoryResponse(HistoryBase):
     goal_time : datetime.datetime
     end_time : datetime.datetime
     created_at : datetime.datetime
-    
 
 
 
