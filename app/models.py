@@ -22,7 +22,7 @@ class History(Base):
     end_time = Column(DateTime, nullable=True)
 
     is_deleted = Column(Boolean, nullable=False, default=False)
-    created_at = Column(DateTime, nullable=False, default=lambda: DateTime.now(KST))
+    created_at = Column(DateTime, nullable=False, default=lambda: datetime.now(KST))
     updated_at = Column(DateTime, nullable=False, default=lambda: datetime.now(KST))
 
 class User(Base):
@@ -39,7 +39,7 @@ class Lock(Base):
     user_id = Column(Integer, ForeignKey("user.id"), nullable=False)
     is_deleted = Column(Boolean, nullable=True, default=False)
     goal_time = Column(DateTime, nullable=False)
-    created_at = Column(DateTime, nullable=False, default=lambda: DateTime.now(KST))
+    created_at = Column(DateTime, nullable=False, default=lambda: datetime.now(KST))
     site_id = Column(Integer, ForeignKey("site.id"), nullable=False)
 
 class Site(Base):
