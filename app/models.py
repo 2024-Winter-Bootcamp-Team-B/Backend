@@ -34,8 +34,8 @@ class User(Base):
     updated_at = Column(DateTime, nullable=True)
     email = Column(String(30), nullable=False)
 
-class Lock(Base):
-    __tablename__ = "lock"
+class Locked(Base):
+    __tablename__ = "Locked"
     id = Column(Integer, primary_key=True, index=True, autoincrement=True, nullable=False)
     user_id = Column(Integer, ForeignKey("user.id"), nullable=False)
     is_deleted = Column(Boolean, nullable=True, default=False)
