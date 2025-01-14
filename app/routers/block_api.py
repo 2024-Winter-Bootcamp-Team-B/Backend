@@ -16,23 +16,10 @@ def get_db():
     finally:
         db.close()
 
-@router.post("/lock/block")
+# 사이트 받아와서 차단하기 
+@router.post("/lock/block/sites")
 async def post_lock_sites(request: Request, db: Session = Depends(get_db)):
-    """
-        {
-            "user_id": "hello",
-            "start_time": "2023-02-26T15:12:17.536Z",
-            "goal_time": "2023-02-26T15:50:17.536Z"
-            "sites": [
-                "https://example.com",
-                "https://test.com",
-                "https://mywebsite.org"
-            ]
-        }
-    """
     try:
-        
-
         # 요청에서 JSON 데이터 추출
         data = await request.json()
         user_id_request = data.get("user_id")

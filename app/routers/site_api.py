@@ -15,7 +15,7 @@ def get_db():
     finally :
         db.close()
 
-@router.get("/lock/blocked-site/most")
+@router.get("/lock/most-blocked")
 async def get_most_site(db: Session = Depends(get_db)):
     try :
         sites = db.query(Site).order_by(desc(Site.blocked_cnt)).limit(5).all()
