@@ -50,6 +50,9 @@ async def post_lock_sites(request: Request, db: Session = Depends(get_db)):
             is_exist = db.query(Site).filter(Site.url == site).first()
 
             if is_exist:
+                is_exist.blocked_cnt += 1
+                db.commit()
+                
                 # Lock 객체 추가
                 new_lock = Lock(
                     user_id=user_id_request,
@@ -62,7 +65,7 @@ async def post_lock_sites(request: Request, db: Session = Depends(get_db)):
                 # 새로운 사이트 추가
                 new_site = Site(
                     url=site,
-                    blocked_cnt=0,
+                    blocked_cnt=1,
                 )
                 db.add(new_site)
                 db.commit()  
