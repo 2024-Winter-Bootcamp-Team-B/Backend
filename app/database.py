@@ -9,11 +9,11 @@ from sqlalchemy.ext.declarative import declarative_base
 from dotenv import load_dotenv
 
 load_dotenv()
-user = os.getenv("DB_USER", "techeer")  # 기본값 설정
-password = os.getenv("DB_PASSWORD", "techeer20250201")
-host = os.getenv("DB_HOST", "127.0.0.1")
-port = os.getenv("DB_PORT", "3306")  # 기본 포트 설정
-db = os.getenv("DB_NAME", "focus_db")
+user = os.getenv("DB_USER")  # 기본값 설정
+password = os.getenv("DB_PASSWORD")
+host = os.getenv("DB_HOST")
+port = os.getenv("DB_PORT")  # 기본 포트 설정
+db = os.getenv("DB_NAME")
 
 db_url = DB_URL = f"mysql+pymysql://{user}:{password}@{host}:{port}/{db}"
 engine = create_engine(DB_URL, echo=True)

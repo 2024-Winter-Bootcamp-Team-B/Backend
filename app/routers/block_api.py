@@ -4,7 +4,7 @@ from fastapi.responses import JSONResponse
 from app.database import SessionLocal
 from sqlalchemy.orm import Session
 
-from app.models import History, Lock, Site
+from app.models import History, Locked, Site
 
 router = APIRouter()
 
@@ -54,7 +54,7 @@ async def post_lock_sites(request: Request, db: Session = Depends(get_db)):
                 db.commit()
                 
                 # Lock 객체 추가
-                new_lock = Lock(
+                new_lock = Locked(
                     user_id=user_id_request,
                     site_id=is_exist.id,
                     goal_time=goal_time,
@@ -71,7 +71,7 @@ async def post_lock_sites(request: Request, db: Session = Depends(get_db)):
                 db.commit()  
                 db.refresh(new_site)
 
-                new_lock = Lock(
+                new_lock = Locked(
                     user_id=user_id_request,
                     site_id=new_site.id,
                     goal_time=goal_time,
