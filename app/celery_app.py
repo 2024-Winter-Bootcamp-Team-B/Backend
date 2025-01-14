@@ -34,9 +34,8 @@ def process_image_task(image_path: str, requested_hand_shape: list):
 
         # 결과를 FastAPI 서버로 전달
         response = requests.post(
-            "http://fastapi:8000/api/save_analysis_result",
+            "http://fastapi_server:8000/photo/result",
             json={
-                "image_path": image_path,
                 "result": analysis_result
             }
         )

@@ -1,5 +1,7 @@
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
+
+from app.routers import save_analysis_api
 from app.routers.image_api import router as image_router
 from app.routers.history_api import router as history_router
 from app.routers.blockedSiteCheck_api import router as blocked_site_router
@@ -7,6 +9,7 @@ from app.routers.site_api import router as site_router
 from app.routers.login_api import router as login_router
 from app.routers.block_api import router as block_router
 from app.routers.unblock_api import router as unblock_router
+from app.routers.save_analysis_api import router as save_analysis_router
 
 
 from app.models import Base
@@ -46,7 +49,7 @@ app.include_router(site_router)
 app.include_router(login_router)
 app.include_router(block_router)
 app.include_router(unblock_router, prefix="/lock", tags=["Blocked Sites"])
-
+app.include_router(save_analysis_api.router)
 
 @app.get("/index", response_class=HTMLResponse)
 async def serve_index():
