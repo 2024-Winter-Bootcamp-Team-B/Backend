@@ -111,11 +111,11 @@ async def handle_google_token(request: Request, db: Session = Depends(get_db)):
         else :
             new_user = User(
                 email = user_info["email"],
-                created_at = datetime.now()
+                created_at = datetime.now(),
+                user_name = user_info["name"]
             )
             db.add(new_user)
             db.commit()
-
         return JSONResponse(
             status_code=200,
             content={

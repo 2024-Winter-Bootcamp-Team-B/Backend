@@ -28,6 +28,7 @@ class History(Base):
 class User(Base):
     __tablename__ = "user"
     id = Column(Integer, primary_key=True, index=True, autoincrement=True, nullable=False)
+    user_name = Column(String(30), nullable=True)
     is_deleted = Column(Boolean, nullable=False, default=False)
     created_at = Column(DateTime, nullable=False, default=lambda: datetime.now(KST))
     updated_at = Column(DateTime, nullable=True)
