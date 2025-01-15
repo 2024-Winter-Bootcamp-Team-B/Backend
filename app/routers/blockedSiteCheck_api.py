@@ -21,5 +21,5 @@ def read_blocked_sites(user_id: int, db: Session = Depends(get_db)):
     # 응답 생성
     return {
         "user_id": user_id,
-        "blocked_sites": sites
+        "blocked_sites": [{"url": site.url} for site in sites] # 차단된 사이트 목록을 반환하도록 수정함
     }
