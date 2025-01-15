@@ -43,13 +43,23 @@ def process_image_task(image_path: str, requested_hand_shape: list):
         # Mediapipe를 이용한 이미지 분석
         analysis_result = analyze_image(image_path, requested_hand_shape)
 
-        # 결과를 FastAPI 서버로 전달
+        # 결과를 FastAPI 서버로 전달 -> 아래와 같은 구조로 전달됨
+
+        # {
+        #     "user_id": "user_id값",  // 이미지와 연결된 사용자 ID
+        #     "timestamp": "ISO형식 타임스탬프",  // 요청의 생성 시간
+        #     "result": {  // analyze_image의 결과값 포함
+        #         "match": true,
+        #         "message": "손 모양이 요청한 모양과 일치합니다."
+        #     }
+        # }
+
         response = requests.post(
             "http://fastapi:8000/photo/result",
             json={
                 "user_id": response_info["user_id"],
                 "timestamp": response_info["timestamp"].isoformat(),
-                "result": analysis_result,
+                "result": 1 if analysis_result["match"] else 0,  # match 값을 정수로 변환
             }
         )
         response.raise_for_status()  # 요청 에러 발생 시 예외 처리

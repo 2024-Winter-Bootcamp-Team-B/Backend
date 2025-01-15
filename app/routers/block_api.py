@@ -8,7 +8,6 @@ from sqlalchemy.orm import Session
 
 router = APIRouter()
 
-
 # str으로 받은 거 db에 넣을 수 있게 포맷하는 함수
 def date_format(time: str, type: bool):
     iso_format = "%Y-%m-%dT%H:%M:%S.%fZ"  # ISO 8601 포맷

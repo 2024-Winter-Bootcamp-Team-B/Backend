@@ -10,7 +10,6 @@ class AnalysisResultSchema(BaseModel):
     timestamp:datetime
     result: int
 
-
 @router.post("/photo/result")
 async def save_analysis_result(data: AnalysisResultSchema):
     try:
@@ -23,7 +22,9 @@ async def save_analysis_result(data: AnalysisResultSchema):
         async with httpx.AsyncClient() as client:
             response = await client.post(
                 unblock_url,
-                json={"result": result, "timestamp": timestamp.isoformat()}
+                json={"result": result}
+                # json={"result": result, "timestamp": timestamp.isoformat()}
+                # timestamp가 필요한 경우 주석 해제
             )
             response.raise_for_status()
 
