@@ -105,7 +105,7 @@ async def handle_google_token(request: Request, db: Session = Depends(get_db)):
             print(f" User already exists: {user.email}")
     
         else : # 신규 이용 고객
-            add_user(user_info["email"], user_info["name"])
+            add_user(db,user_info.get("email"), user_info.get("name"))
 
         return JSONResponse(
             status_code=200,
