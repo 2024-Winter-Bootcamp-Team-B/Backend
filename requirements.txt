@@ -25,3 +25,4 @@ requests
 authlib
 httpx
 itsdangerous
+pytest
