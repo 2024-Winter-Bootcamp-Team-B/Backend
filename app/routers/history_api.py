@@ -1,27 +1,21 @@
 from datetime import datetime
 from fastapi import APIRouter, HTTPException, Depends
 from fastapi.responses import JSONResponse
-from app.database import SessionLocal
-from app.models import History
+from app.crud.history import get_histories
+from app.database import get_db
 from sqlalchemy.orm import Session
 
 router = APIRouter()
 
-def get_db():
-    db = SessionLocal()
-    try :
-        yield db
-    finally :
-        db.close()
+
 
 @router.get("/statistic/{user_id}")
-async def get_histories(user_id: int, db: Session = Depends(get_db)):
+async def user_statistic(request_user_id: int, db: Session = Depends(get_db)):
     
     try :
         # 디비에서 찾아옴 
-        histories = db.query(History).filter(History.user_id == user_id).all()
+        histories = get_histories(db, request_user_id)
 
-        
         # 기록이 없을 경우
         if not histories:
             return JSONResponse(

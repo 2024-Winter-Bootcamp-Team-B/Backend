@@ -1,0 +1,13 @@
+Post ("/lock/block")
+{
+    "user_id": "1",
+    "start_time": "2023-02-26T15:12:17.536Z",
+    "goal_time": "2023-02-26T15:50:17.536Z"
+    "sites": [
+        "https://example.com",
+        "https://test.com",
+        "https://mywebsite.org",
+    ]
+}
+    
+    
