@@ -36,7 +36,7 @@ app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
 # 사용자가 이미지를 입력하면 그 이미지를 서버에 업로드하고, 
 # mediapipe를 사용하여 요청된 이미지와 동일한 이미지를 업로드 했는지 확인 후
-# 결과를 반환하는 API를 구현하세요.
+# 결과를 반환하는 API를 구현
 
 # 라우터 등록
 app.include_router(image_router)

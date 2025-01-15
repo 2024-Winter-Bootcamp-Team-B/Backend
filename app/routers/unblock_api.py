@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 from app.database import get_db
 from app.crud.lock import unblock_sites_by_user
 from app.services.mediapipe_service import analyze_image
+from app.celery_app import cleanup_user_files_task  # Celery 작업 불러오기
 
 import os
 import shutil
@@ -38,13 +39,17 @@ async def unblock_sites(user_id: int, file: UploadFile = File(...), db: Session 
         # 차단된 사이트 해제
         unblock_sites_by_user(db, user_id)
 
+        # 파일 삭제를 Celery로 처리 (모든 작업이 끝난 후)
+        cleanup_user_files_task.delay(user_id)
+
         return {"message": "모든 차단된 사이트가 해제되었습니다.", "user_id": user_id}
+    
 
     except Exception as e:
         # 에러 발생 시 JSON 에러 메시지 반환 -> *** 이거 나중에 리다이렉션 페이지로 가도록 수정해야함
         return JSONResponse(content={"error": str(e)}, status_code=500)
 
-    finally:
-        # 업로드된 파일 삭제
-        if os.path.exists(file_path):
-            os.remove(file_path)
+    # finally:
+    #     # 업로드된 파일 삭제
+    #     if os.path.exists(file_path):
+    #         os.remove(file_path)

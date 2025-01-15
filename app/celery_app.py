@@ -1,4 +1,5 @@
 import requests
+import os
 from celery import Celery
 from app.services.mediapipe_service import analyze_image
 
@@ -46,3 +47,33 @@ def process_image_task(image_path: str, requested_hand_shape: list):
         # 에러 로깅
         print(f"Error processing image: {e}")
         return {"error": str(e)}
+    
+############################################################################################################
+
+UPLOAD_DIR = "uploaded_images"
+
+@celery_app.task
+def cleanup_user_files_task(user_id: int):
+    """
+    특정 사용자의 파일을 작업 완료된 순서대로 삭제하는 Celery 작업.
+    """
+    try:
+        # 업로드된 파일 목록 가져오기
+        user_files = [
+            f for f in os.listdir(UPLOAD_DIR)
+            if f.startswith(f"user_{user_id}_")  # 해당 사용자 ID에 해당하는 파일만 필터링
+        ]
+
+        # 타임스탬프 기준 정렬
+        user_files.sort(key=lambda f: f.split("_")[2])  # 타임스탬프 추출 및 정렬
+
+        # 가장 오래된 파일 삭제 -> 사용자가 여러번 업로드를 할 수도 있기 때문에
+        if user_files:
+            oldest_file = os.path.join(UPLOAD_DIR, user_files[0])
+            os.remove(oldest_file)
+            print(f"Deleted file: {oldest_file}")
+        else:
+            print(f"No files found for user {user_id} to delete.")
+
+    except Exception as e:
+        print(f"Error during cleanup for user {user_id}: {e}")
