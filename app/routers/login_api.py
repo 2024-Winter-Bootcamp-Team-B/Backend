@@ -8,7 +8,7 @@ from starlette.config import Config
 from dotenv import load_dotenv
 
 from sqlalchemy.orm import Session
-from app.crud.user import add_user, get_user_by_email
+from app.crud.user import add_user, get_user_by_email, get_user_by_id
 from app.database import get_db  # DB 세션 가져오기
 from app.models import User
 
@@ -101,11 +101,14 @@ async def handle_google_token(request: Request, db: Session = Depends(get_db)):
         user = get_user_by_email(db, user_info["email"])
 
         
-        if user : # 이미 회원가입한 사람
-            print(f" User already exists: {user.email}")
-    
-        else : # 신규 이용 고객
+        if not user : # 처음 온 회원
             add_user(db,user_info.get("email"), user_info.get("name"))
+
+
+        # 세션에 정보 저장
+        request.session["user_id"] = user.id
+        request.session["user_email"] = user.email
+       
 
         return JSONResponse(
             status_code=200,
@@ -118,4 +121,39 @@ async def handle_google_token(request: Request, db: Session = Depends(get_db)):
         )
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error verifying token: {str(e)}")
+
+
+@router.get("/user/info")
+async def get_current_user(request : Request, db : Session=Depends(get_db)):
+    session_user_id = request.session.get("user_id")
     
+    # 로그인 X 유저
+    if not session_user_id :
+        raise HTTPException(status_code=401, detail="User not logged in")
+    
+    logged_in_user = get_user_by_id(db, session_user_id)
+
+    # 유저를 찾을 수 없을 때
+    if not logged_in_user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    
+    return JSONResponse(
+        status_code=200,
+        content={
+            "user_id" : logged_in_user.id,
+            "email" : logged_in_user.email,
+            "name" : logged_in_user.user_name
+        }
+    )
+
+@router.post("/auth/logout")
+async def logout(request : Request):
+    request.session.clear()
+
+    return JSONResponse(
+        status_code=200,
+        content={
+            "message" : "Successfully logged out"
+        }
+    )
