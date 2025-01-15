@@ -13,3 +13,6 @@ def add_user(db : Session, request_email : str, request_user_name : str):
     db.add(new_user)
     db.commit()
     return new_user
+
+def get_user_by_id(db : Session, request_id : int):
+    return db.query(User).filter(User.id==request_id).first()
