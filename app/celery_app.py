@@ -2,6 +2,7 @@ import requests
 import os
 from celery import Celery
 from app.services.mediapipe_service import analyze_image
+import re
 
 # Celery 앱 객체 생성
 celery_app = Celery(
@@ -27,18 +28,28 @@ celery_app.conf.update(
 @celery_app.task
 def process_image_task(image_path: str, requested_hand_shape: list):
     """
-    Mediapipe를 사용해 이미지를 분석하고 결과를 FastAPI 서버로 전달.
+     Mediapipe를 사용해 이미지를 분석하고 결과를 FastAPI 서버로 전달.
     """
     try:
+        pattern = r"user_(\d+)_(\d{8}T\d{6}Z)_"
+        match = re.search(pattern, image_path)
+        if match:
+            user_id = match.group(1)  # 첫 번째 그룹: user_id
+            timestamp = match.group(2)  # 두 번째 그룹: timestamp
+            response_info = {"user_id": user_id, "timestamp": timestamp}
+        else:
+            raise ValueError(f"Invalid image_path format: {image_path}")
+
         # Mediapipe를 이용한 이미지 분석
         analysis_result = analyze_image(image_path, requested_hand_shape)
 
         # 결과를 FastAPI 서버로 전달
         response = requests.post(
-            "http://fastapi:8000/api/save_analysis_result",
+            "http://fastapi:8000/photo/result",
             json={
-                "image_path": image_path,
-                "result": analysis_result
+                "user_id": response_info["user_id"],
+                "timestamp": response_info["timestamp"].isoformat(),
+                "result": analysis_result,
             }
         )
         response.raise_for_status()  # 요청 에러 발생 시 예외 처리
