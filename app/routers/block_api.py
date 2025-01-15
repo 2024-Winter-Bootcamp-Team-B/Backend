@@ -1,102 +1,50 @@
 from datetime import datetime
-from fastapi import APIRouter, HTTPException, Depends, Request
+from fastapi import APIRouter,Depends, Request
 from fastapi.responses import JSONResponse
-from app.database import SessionLocal
+from app.crud.lock import add_block_sites
+from app.crud.history import add_history
+from app.database import get_db
 from sqlalchemy.orm import Session
-
-from app.models import History, Locked, Site
 
 router = APIRouter()
 
-# DB 세션 종속성
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+
+# str으로 받은 거 db에 넣을 수 있게 포맷하는 함수
+def date_format(time: str, type: bool):
+    iso_format = "%Y-%m-%dT%H:%M:%S.%fZ"  # ISO 8601 포맷
+    general_format = "%Y-%m-%d %H:%M:%S"  # 일반적인 출력 포맷
+    
+    # 문자열을 datetime 객체로 변환
+    date = datetime.strptime(time, iso_format)
+    
+    if type == True:
+        return date
+    return time
+
 
 @router.post("/lock/block")
 async def post_lock_sites(request: Request, db: Session = Depends(get_db)):
-    """
-        {
-            "user_id": "hello",
-            "start_time": "2023-02-26T15:12:17.536Z",
-            "goal_time": "2023-02-26T15:50:17.536Z"
-            "sites": [
-                "https://example.com",
-                "https://test.com",
-                "https://mywebsite.org"
-            ]
-        }
-    """
     try:
         
-
         # 요청에서 JSON 데이터 추출
         data = await request.json()
-        user_id_request = data.get("user_id")
+        request_user_id = data.get("user_id")
+        request_sites = data.get("sites")
 
-        iso_format = "%Y-%m-%dT%H:%M:%S.%fZ"  # ISO 8601 포맷
-        general_format = "%Y-%m-%d %H:%M:%S"  # 일반적인 출력 포맷
-
-        start_time = datetime.strptime(data["start_time"], iso_format).strftime(general_format)
-        goal_time = datetime.strptime(data["goal_time"], iso_format).strftime(general_format)
-        
-        sites = data.get("sites")
-
-        for site in sites:
-            # 사이트 확인
-            is_exist = db.query(Site).filter(Site.url == site).first()
-
-            if is_exist:
-                is_exist.blocked_cnt += 1
-                db.commit()
-                
-                # Lock 객체 추가
-                new_lock = Locked(
-                    user_id=user_id_request,
-                    site_id=is_exist.id,
-                    goal_time=goal_time,
-                )
-                db.add(new_lock)
-
-            else:
-                # 새로운 사이트 추가
-                new_site = Site(
-                    url=site,
-                    blocked_cnt=1,
-                )
-                db.add(new_site)
-                db.commit()  
-                db.refresh(new_site)
-
-                new_lock = Locked(
-                    user_id=user_id_request,
-                    site_id=new_site.id,
-                    goal_time=goal_time,
-                )
-                db.add(new_lock)
-
-
-        new_history = History(
-            user_id = user_id_request,
-            start_time = datetime.strptime(data["start_time"], iso_format),
-            goal_time = datetime.strptime(data["goal_time"], iso_format)
-        )
-        db.add(new_history)
-
-        db.commit()
+        # 사이트 차단하기
+        add_block_sites(db, request_user_id, request_sites, date_format(data["start_time"], True))
+        # 차단 기록 남기기
+        add_history(db, request_user_id, date_format(data["start_time"], True), date_format(data["goal_time"], True))
         # 성공 응답 반환
         return JSONResponse(
             status_code=200,
             content={
                 "message": "Data processed successfully",
                 "data": {
-                    "user_id": user_id_request,
-                    "start_time": start_time,
-                    "goal_time": goal_time,
-                    "sites" : sites
+                    "user_id": request_user_id,
+                    "start_time": date_format(data["start_time"], False),
+                    "goal_time": date_format(data["goal_time"], False),
+                    "sites" : request_sites
                 },
             },
         )

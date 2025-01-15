@@ -2,27 +2,28 @@
 from fastapi import APIRouter, HTTPException, Depends
 from fastapi.responses import JSONResponse
 from sqlalchemy import desc
-from app.database import SessionLocal
+from app.crud.site import get_most_blocked_site
+from app.database import get_db
 from app.models import Site
 from sqlalchemy.orm import Session
 
 router = APIRouter()
 
-def get_db():
-    db = SessionLocal()
+# 가장 많이 차단되어 있는 상위 5개의 사이트 반환해주기
+@router.get("/lock/most-blocked")
+async def most_site(db: Session = Depends(get_db)):
     try :
-        yield db
-    finally :
-        db.close()
-
-@router.get("/lock/blocked-site/most")
-async def get_most_site(db: Session = Depends(get_db)):
-    try :
-        sites = db.query(Site).order_by(desc(Site.blocked_cnt)).limit(5).all()
-        return JSONResponse(
-            status_code=200,  # HTTP 상태 코드 200을 명시
-            content={"result": [site.url for site in sites]}
-        )      
+        sites = get_most_blocked_site(db)
+        if sites :
+            return JSONResponse(
+                status_code=200,  # 차단 사이트 기록이 하나라도 있는 경우 -> { "result" : ["example1.com", "example2.com"]}
+                content={"result": [site.url for site in sites]}
+            )
+        else : 
+            return JSONResponse( # 초기에 차단 사이트 기록이 없는데 상위 5개를 요청할 떄
+                status_code=200, 
+                content={"result": "차단되었던 사이트 기록이 없습니다."}
+            )  
 
     except Exception as e :
         return JSONResponse(

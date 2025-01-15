@@ -8,7 +8,8 @@ from starlette.config import Config
 from dotenv import load_dotenv
 
 from sqlalchemy.orm import Session
-from app.database import SessionLocal  # DB 세션 가져오기
+from app.crud.user import add_user, get_user_by_email
+from app.database import get_db  # DB 세션 가져오기
 from app.models import User
 
 import os
@@ -33,13 +34,7 @@ google = oauth.register(
     server_metadata_url="https://accounts.google.com/.well-known/openid-configuration",
     client_kwargs={"scope": "openid email profile"},
 )
-# DB 세션 종속성
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+
 # 기본 Redirect URI 설정 (환경 변수 미설정 시)
 REDIRECT_URI = os.getenv("GOOGLE_REDIRECT_URI")
 
@@ -103,19 +98,15 @@ async def handle_google_token(request: Request, db: Session = Depends(get_db)):
             # 사용자 정보 파싱
             user_info = response.json()
         
-        user = db.query(User).filter(User.email == user_info["email"]).first()
+        user = get_user_by_email(db, user_info["email"])
+
         
-        # 이미 회원가입한 사람
-        if user :
+        if user : # 이미 회원가입한 사람
             print(f" User already exists: {user.email}")
-        else :
-            new_user = User(
-                email = user_info["email"],
-                created_at = datetime.now(),
-                user_name = user_info["name"]
-            )
-            db.add(new_user)
-            db.commit()
+    
+        else : # 신규 이용 고객
+            add_user(user_info["email"], user_info["name"])
+
         return JSONResponse(
             status_code=200,
             content={

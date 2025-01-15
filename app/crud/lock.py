@@ -1,4 +1,8 @@
+from datetime import datetime
+from typing import List
 from sqlalchemy.orm import Session
+from app.crud.history import update_history
+from app.crud.site import add_site, site_exist_check
 from app.models import Locked, Site
 
 # 차단되어 있는 사이트 목록 조회할 때 사용하는 함수
@@ -20,3 +24,41 @@ def unblock_sites_by_user(db: Session, user_id: int):
     """
     db.query(Locked).filter(Locked.user_id == user_id).delete()
     db.commit()
+
+    # 해당 사용자의 기록에 end_time 추가
+    update_history(db, user_id)
+
+# 차단할 떄 사용하는 함수
+def add_block_sites(
+        db : Session, 
+        request_user_id : int, 
+        request_siteURL : List[str],
+        request_goal_time : datetime):
+    
+    for site in request_siteURL : 
+        
+        # 차단 기록이 있는 사이트인지 체크
+        is_exist = site_exist_check(db, site)
+
+        if is_exist : # 차단 기록 O
+
+            # 차단  횟수 ++
+            is_exist.blocked_cnt += 1
+            db.commit()
+
+        else : # 차단 기록 X
+            # 새로운 사이트를 추가하기
+            is_exist = add_site(db, request_siteURL)
+        
+        # 요청 사이트를 차단하기
+        add_locked(db, request_user_id, is_exist.id, request_goal_time)
+
+# 진짜 디비에 차단하기
+def add_locked(db : Session, request_user_id : int, request_site_id : int, request_goal_time : datetime):
+    new_lock = Locked(
+                user_id = request_user_id,
+                site_id = request_site_id,
+                goal_time = request_goal_time
+            )
+    db.add(new_lock)
+
