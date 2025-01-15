@@ -29,7 +29,7 @@ async def upload_image(user_id: int, file: UploadFile = File(...)):
         with open(file_path, "wb") as buffer:
             shutil.copyfileobj(file.file, buffer)
 
-        return JSONResponse(content={"file_path": file_path})
+        return file_path
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error while processing the file: {str(e)}")
