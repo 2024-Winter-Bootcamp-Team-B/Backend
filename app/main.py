@@ -7,6 +7,8 @@ from app.routers.site_api import router as site_router
 from app.routers.login_api import router as login_router
 from app.routers.block_api import router as block_router
 from app.routers.unblock_api import router as unblock_router
+from fastapi.middleware.cors import CORSMiddleware
+
 
 
 from app.models import Base
@@ -23,6 +25,22 @@ def init_db():
 
 
 app = FastAPI()
+
+origins = [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173"
+    # 더 추가할 수 있음
+]
+
+# FastAPI와 React는 다른 도메인에서 실행되기 때문에, CORS (Cross-Origin Resource Sharing) 설정을 해줘야 함
+# (FastAPI = 8000번 포트, React = 5173번 포트)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 # .env에서 SECRET_KEY 가져오기
