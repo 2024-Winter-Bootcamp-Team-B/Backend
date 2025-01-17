@@ -2,3 +2,6 @@ myenv/
 .ve/
 env/
 .env
+__pycache__/
+*.pyc
+*.pyo
