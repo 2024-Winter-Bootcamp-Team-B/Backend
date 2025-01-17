@@ -1,0 +1,22 @@
+global:
+  scrape_interval: 15s #prometheus가 각 타겟의 매트릭을 15초마다 가져오도록 함.
+  evaluation_interval: 15s
+
+
+scrape_configs: #수집할 다양한 목록
+  - job_name: 'fastapi-data' #이작업의 이름은 fastapi임
+    # metrics_path: /metrics #매트릭이 제공되는 경로고 기본값은 매트릭스로 설정 -> 이러면 fastapi에서 /metrics로 매트릭을 제공해야함
+    static_configs: #정적타겟
+      - targets: ['fastapi:8000'] #fastapi 8000 포트에서 매트릭 수집하도록 정함
+
+  - job_name: 'cadvisor-data' #이작업의 이름은 cadvisor임
+    static_configs: #정적타겟
+      - targets: ['cadvisor:8080'] #cadvisor 8080포트에서 매트릭 수집하도록 설정
+
+  - job_name: 'rabbitmq-data' 
+    static_configs: 
+      - targets: ['rabbitmq:15692']
+
+  - job_name: 'nginx-data'
+    static_configs:
+      - targets: ['nginx-exporter:9113']
