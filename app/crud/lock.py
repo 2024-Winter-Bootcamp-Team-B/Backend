@@ -48,7 +48,7 @@ def add_block_sites(
 
         else : # 차단 기록 X
             # 새로운 사이트를 추가하기
-            is_exist = add_site(db, request_siteURL)
+            is_exist = add_site(db, site)
         
         # 요청 사이트를 차단하기
         add_locked(db, request_user_id, is_exist.id, request_goal_time)
@@ -61,4 +61,5 @@ def add_locked(db : Session, request_user_id : int, request_site_id : int, reque
                 goal_time = request_goal_time
             )
     db.add(new_lock)
-
+    db.commit()
+    return new_lock

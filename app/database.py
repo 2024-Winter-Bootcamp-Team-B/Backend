@@ -3,7 +3,7 @@
 # 구현한 api실험은 swagger사용하면 되니까 db연동은 나중에 해도 될 듯.
 import os
 
-from sqlalchemy import create_engine
+from sqlalchemy import MetaData, StaticPool, create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 from dotenv import load_dotenv
@@ -29,3 +29,11 @@ def get_db():
         yield db
     finally:
         db.close()
+
+def clear_db():
+    meta = MetaData()
+    meta.reflect(bind=engine)
+    with engine.connect() as conn :
+        for table in reversed(meta.sorted_tables):
+            conn.execute(table.delete())
+        conn.commit()

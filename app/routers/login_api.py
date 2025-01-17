@@ -61,11 +61,10 @@ async def auth_callback(request: Request):
         user_info = await google.get("userinfo", token=token)
         user_data = user_info.json()
 
-       
         return JSONResponse(
             status_code=200,
             content={
-                "message": "Google Login Successful(테스트)",
+                "message": "Google Login Successful",
                 "user": user_data,
             },
         )
@@ -108,7 +107,6 @@ async def handle_google_token(request: Request, db: Session = Depends(get_db)):
         # 세션에 정보 저장
         request.session["user_id"] = user.id
         request.session["user_email"] = user.email
-       
 
         return JSONResponse(
             status_code=200,
