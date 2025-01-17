@@ -62,7 +62,7 @@ app.include_router(history_router)
 app.include_router(blocked_site_router, prefix="/lock", tags=["Blocked Sites"])
 app.include_router(site_router)
 app.include_router(login_router)
-app.include_router(block_router)
+app.include_router(block_router, tags=["Blocked Sites"])
 app.include_router(unblock_router, tags=["Blocked Sites"])
 
 
