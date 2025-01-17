@@ -9,7 +9,9 @@ def get_most_blocked_site(db: Session):
 
 # 차단 기록이 있는 사이트인지 체크하는 함수
 def site_exist_check(db: Session, request_siteUrl : str):
-    return db.query(Site).filter(Site.url == request_siteUrl).first()
+    site = db.query(Site).filter(Site.url == request_siteUrl).first()
+    print(f"Checking site existence: {request_siteUrl} -> {'Found' if site else 'Not Found'}")
+    return site
 
 # 차단 기록이 없으면 디비에 추가하기
 def add_site(db : Session, request_siteURL : str):

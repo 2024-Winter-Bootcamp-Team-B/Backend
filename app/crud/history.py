@@ -14,6 +14,8 @@ def add_history(db: Session, request_user_id: int, request_start_time : datetime
     db.add(new_history)
     db.commit()
 
+    return new_history
+
 # 유저의 기록 정보를 반환하기
 def get_histories(db : Session, request_user_id : int):
     return db.query(History).filter(History.user_id == request_user_id).all()
