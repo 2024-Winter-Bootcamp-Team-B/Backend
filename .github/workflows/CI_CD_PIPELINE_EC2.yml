@@ -47,9 +47,9 @@ jobs:
       # Deploy to EC2
       - name: Deploy on EC2
         run: |
-          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ec2-user@${{ secrets.EC2_IP }} << 'EOF'
+          ssh -i ~/.ssh/id_rsa ec2-user@${{ secrets.EC2_IP }} << 'EOF'
           docker pull ${{ secrets.DOCKER_USERNAME }}/fastapi_server:latest
-          cd /path/to/docker-compose-dir
+          cd /home/ec2-user/app
           docker-compose down
           docker-compose up -d
           EOF
