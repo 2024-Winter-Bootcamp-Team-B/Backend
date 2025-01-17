@@ -20,7 +20,6 @@ class History(Base):
     start_time = Column(DateTime, nullable=False)
     goal_time = Column(DateTime, nullable=False)
     end_time = Column(DateTime, nullable=True)
-
     is_deleted = Column(Boolean, nullable=False, default=False)
     created_at = Column(DateTime, nullable=False, default=lambda: datetime.now(KST))
     updated_at = Column(DateTime, nullable=False, default=lambda: datetime.now(KST))
@@ -28,11 +27,13 @@ class History(Base):
 class User(Base):
     __tablename__ = "user"
     id = Column(Integer, primary_key=True, index=True, autoincrement=True, nullable=False)
-    user_name = Column(String(30), nullable=True)
+    login_id = Column(String(30), nullable=False)
+    login_password = Column(String(30), nullable=False)
+    user_name = Column(String(30), nullable=False)
+    email = Column(String(30), nullable=False)
     is_deleted = Column(Boolean, nullable=False, default=False)
     created_at = Column(DateTime, nullable=False, default=lambda: datetime.now(KST))
     updated_at = Column(DateTime, nullable=True)
-    email = Column(String(30), nullable=False)
 
 class Locked(Base):
     __tablename__ = "Locked"
