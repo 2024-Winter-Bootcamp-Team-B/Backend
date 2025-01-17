@@ -6,8 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="4f5572e6-49ce-49b9-b1e3-1825411821dd" name="변경" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/celery_app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/celery_app.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/routers/image_api.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/routers/image_api.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose.yml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -32,7 +31,7 @@
   "keyToString": {
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "feat/#60",
+    "git-widget-placeholder": "refactor/#79",
     "last_opened_file_path": "/Users/bagboseong/programing/25/2025_winter_bootcamp/Backend",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
