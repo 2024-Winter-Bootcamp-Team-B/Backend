@@ -32,27 +32,28 @@ def unblock_sites_by_user(db: Session, user_id: int):
 def add_block_sites(
         db : Session, 
         request_user_id : int, 
-        request_siteURL : List[str],
+        request_siteURLs : List[str],
         request_goal_time : datetime):
     
-    for site in request_siteURL : 
+    for siteURL in request_siteURLs : 
         
         # 차단 기록이 있는 사이트인지 체크
-        is_exist = site_exist_check(db, site)
+        exist_site = site_exist_check(db, siteURL)
 
-        if is_exist : # 차단 기록 O
-
+        if exist_site : # 차단 기록 O
             # 차단  횟수 ++
-            is_exist.blocked_cnt += 1
+            exist_site.blocked_cnt += 1
             db.commit()
 
         else : # 차단 기록 X
             # 새로운 사이트를 추가하기
-            is_exist = add_site(db, request_siteURL)
+            print(f"Adding new site: {siteURL}")
+            exist_site = add_site(db, siteURL)
         
         # 요청 사이트를 차단하기
-        add_locked(db, request_user_id, is_exist.id, request_goal_time)
-
+        new_locked = add_locked(db, request_user_id, exist_site.id, request_goal_time)
+        print(f"New lock added: {new_locked.user_id}, {new_locked.site_id}")
+        db.commit()
 # 진짜 디비에 차단하기
 def add_locked(db : Session, request_user_id : int, request_site_id : int, request_goal_time : datetime):
     new_lock = Locked(
@@ -61,4 +62,5 @@ def add_locked(db : Session, request_user_id : int, request_site_id : int, reque
                 goal_time = request_goal_time
             )
     db.add(new_lock)
+    return new_lock
 

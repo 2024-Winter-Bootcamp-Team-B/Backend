@@ -9,6 +9,7 @@ def get_user_by_email(db : Session, request_email : str):
 def add_user(db : Session,
             request_login_id : str, request_login_password :str,
             request_user_name : str, request_email : str):
+    
     new_user = User(
         login_id = request_login_id,
         login_password = request_login_password,
