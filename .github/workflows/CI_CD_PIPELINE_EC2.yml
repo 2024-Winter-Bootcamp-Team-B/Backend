@@ -53,8 +53,8 @@ jobs:
           docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
 
           # Ensure the directory exists
-          mkdir -p /path/to/docker-compose-dir
-          cd /path/to/docker-compose-dir
+          mkdir -p ~/docker-compose-dir
+          cd ~/docker-compose-dir
 
           # Pull the latest image and restart services
           docker pull ${{ secrets.DOCKER_USERNAME }}/fastapi_server:latest
