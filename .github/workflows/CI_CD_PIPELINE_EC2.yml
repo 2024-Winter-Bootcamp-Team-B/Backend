@@ -50,6 +50,14 @@ jobs:
         run: |
           scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa docker-compose.yml ec2-user@${{ secrets.EC2_IP }}:~/docker-compose-dir/docker-compose.yml
 
+      # Upload .env file content from secrets
+      - name: Upload .env file
+        run: |
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ec2-user@${{ secrets.EC2_IP }} << 'EOF'
+          mkdir -p ~/docker-compose-dir
+          echo "${{ secrets.ENV_FILE }}" > ~/docker-compose-dir/.env
+          EOF
+
       # Deploy to EC2
       - name: Deploy on EC2
         run: |
