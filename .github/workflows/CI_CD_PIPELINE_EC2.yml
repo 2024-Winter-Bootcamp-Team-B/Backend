@@ -72,10 +72,6 @@ jobs:
           # Docker login
           docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
 
-          # Ensure the directory exists
-          mkdir -p ~/docker-compose-dir
-          cd ~/docker-compose-dir
-
           if [ $(df --output=pcent / | tail -n 1 | tr -d '%') -ge 80 ]; then
           docker system prune -af
           fi
