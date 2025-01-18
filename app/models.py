@@ -12,93 +12,40 @@ import pytz
 Base = declarative_base()
 KST = pytz.timezone("Asia/Seoul")
 
+# -----------------------------------------------------
+class History(Base):
+    __tablename__ = "history"
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True, nullable=False)
+    user_id = Column(Integer, ForeignKey("user.id"), nullable=False)
+    start_time = Column(DateTime, nullable=False)
+    goal_time = Column(DateTime, nullable=False)
+    end_time = Column(DateTime, nullable=True)
+    is_deleted = Column(Boolean, nullable=False, default=False)
+    created_at = Column(DateTime, nullable=False, default=lambda: datetime.now(KST))
+    updated_at = Column(DateTime, nullable=False, default=lambda: datetime.now(KST))
 
 class User(Base):
     __tablename__ = "user"
-    id = Column(Integer, primary_key=True)
-    nickname = Column(String(50), nullable=False)
-    created_at = Column(DateTime, nullable=False, default=lambda: datetime.now(KST))
-    updated_at = Column(
-        DateTime,
-        nullable=False,
-        default=lambda: datetime.now(KST),
-        onupdate=lambda: datetime.now(KST),
-    )
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True, nullable=False)
+    login_id = Column(String(30), nullable=False)
+    login_password = Column(String(30), nullable=False)
+    user_name = Column(String(30), nullable=False)
+    email = Column(String(30), nullable=False)
     is_deleted = Column(Boolean, nullable=False, default=False)
-
-    prescriptions = relationship("Prescription", back_populates="user")
-    chatrooms = relationship("Chatroom", back_populates="user")
-
-
-class Mentor(Base):
-    __tablename__ = "mentor"
-    id = Column(Integer, primary_key=True, index=True)
-    name = Column(String(50), nullable=False)
-    description = Column(String(200), nullable=False)
     created_at = Column(DateTime, nullable=False, default=lambda: datetime.now(KST))
-    updated_at = Column(
-        DateTime,
-        nullable=False,
-        default=lambda: datetime.now(KST),
-        onupdate=lambda: datetime.now(KST),
-    )
-    is_deleted = Column(Boolean, nullable=False, default=False)
+    updated_at = Column(DateTime, nullable=True)
 
-    prescriptions = relationship("Prescription", back_populates="mentor")
-    chatrooms = relationship("Chatroom", back_populates="mentor")
-
-
-class Prescription(Base):
-    __tablename__ = "prescription"
-    id = Column(Integer, primary_key=True, index=True)
+class Locked(Base):
+    __tablename__ = "Locked"
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True, nullable=False)
     user_id = Column(Integer, ForeignKey("user.id"), nullable=False)
-    mentor_id = Column(Integer, ForeignKey("mentor.id"), nullable=False)
-    content = Column(String(500), nullable=False)
+    is_deleted = Column(Boolean, nullable=True, default=False)
+    goal_time = Column(DateTime, nullable=False)
     created_at = Column(DateTime, nullable=False, default=lambda: datetime.now(KST))
-    updated_at = Column(
-        DateTime,
-        nullable=False,
-        default=lambda: datetime.now(KST),
-        onupdate=lambda: datetime.now(KST),
-    )
-    is_deleted = Column(Boolean, nullable=False, default=False)
+    site_id = Column(Integer, ForeignKey("site.id"), nullable=False)
 
-    user = relationship("User", back_populates="prescriptions")
-    mentor = relationship("Mentor", back_populates="prescriptions")
-
-
-class Chatroom(Base):
-    __tablename__ = "chatroom"
-    id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("user.id"), nullable=False)
-    mentor_id = Column(Integer, ForeignKey("mentor.id"), nullable=False)
-    created_at = Column(DateTime, nullable=False, default=lambda: datetime.now(KST))
-    updated_at = Column(
-        DateTime,
-        nullable=False,
-        default=lambda: datetime.now(KST),
-        onupdate=lambda: datetime.now(KST),
-    )
-    is_deleted = Column(Boolean, nullable=False, default=False)
-
-    user = relationship("User", back_populates="chatrooms")
-    mentor = relationship("Mentor", back_populates="chatrooms")
-    chats = relationship("Chat", back_populates="chatroom")
-
-
-class Chat(Base):
-    __tablename__ = "chat"
-    id = Column(Integer, primary_key=True, index=True)
-    chatroom_id = Column(Integer, ForeignKey("chatroom.id"), nullable=False)
-    content = Column(String(1000), nullable=False)
-    is_user = Column(Boolean, nullable=False)
-    created_at = Column(DateTime, nullable=False, default=lambda: datetime.now(KST))
-    updated_at = Column(
-        DateTime,
-        nullable=False,
-        default=lambda: datetime.now(KST),
-        onupdate=lambda: datetime.now(KST),
-    )
-    is_deleted = Column(Boolean, nullable=False, default=False)
-
-    chatroom = relationship("Chatroom", back_populates="chats")
+class Site(Base):
+    __tablename__ = "site"
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True, nullable=False)
+    url = Column(String(300), nullable=False)
+    blocked_cnt = Column(Integer, nullable=True, default=0)

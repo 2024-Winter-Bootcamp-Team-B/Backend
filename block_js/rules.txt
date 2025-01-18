@@ -1,0 +1,34 @@
+    "declarative_net_request": {  
+        "rule_resources": [
+            {
+                "id": "ruleset_1",
+                "enabled": true,
+                "path": "rules.json"
+            }
+        ]
+    }
+
+    정적 규칙 파일(rules.json)을 불러와 요청 차단 규칙을 정의
+    manifest.json 파일에 있었던 것
+
+    [
+    {
+        "id": 1,
+        "priority": 1,
+        "action": {
+            "type": "block"
+        },
+        "condition": {
+            "urlFilter": [
+                "youtube.com",
+                "naver.com"
+            ],
+            "resourceTypes": [
+                "main_frame"
+            ]
+        }
+    }
+]
+
+rules.json 파일
+Chrome Declarative Net Request API를 활용해 네트워크 요청 차단 규칙을 정의하는 규칙 파일
