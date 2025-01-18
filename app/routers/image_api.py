@@ -6,6 +6,7 @@ import os # os, shutil: 파일 저장 및 관리에 사용
 import shutil
 from app.services.mediapipe_service import analyze_image # analyze_image: Mediapipe 로직이 구현된 서비스 모듈을 가져옴
 from app.celery_app import process_image_task  # Celery 작업 불러오기
+from fastapi import Form
 
 
 router = APIRouter()
@@ -13,11 +14,13 @@ router = APIRouter()
 UPLOAD_DIR = "uploaded_images"
 
 @router.post("/lock/upload-image")
-async def upload_image(user_id: int, file: UploadFile = File(...)):
+async def upload_image(user_id: int = Form(...) , file: UploadFile = File(...)):
     """
     고유 파일명을 생성하여 저장하고, 파일 경로를 반환. 파일 삭제는 별도 처리에서 호출.
     """
     try:
+        print(f"User ID: {user_id}, File Name: {file.filename}")
+        
         # 디렉토리 생성
         os.makedirs(UPLOAD_DIR, exist_ok=True)
 
