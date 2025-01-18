@@ -45,6 +45,11 @@ jobs:
           echo "${{ secrets.EC2_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
 
+      # Upload docker-compose.yml
+      - name: Upload docker-compose.yml
+        run: |
+          scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa docker-compose.yml ec2-user@${{ secrets.EC2_IP }}:~/docker-compose-dir/docker-compose.yml
+
       # Deploy to EC2
       - name: Deploy on EC2
         run: |
