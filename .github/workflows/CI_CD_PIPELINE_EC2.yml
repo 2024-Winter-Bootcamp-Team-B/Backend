@@ -49,9 +49,15 @@ jobs:
       - name: Deploy on EC2
         run: |
           ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ec2-user@${{ secrets.EC2_IP }} << 'EOF'
+          # Docker login
           docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-          docker pull ${{ secrets.DOCKER_USERNAME }}/fastapi_server:latest
+
+          # Ensure the directory exists
+          mkdir -p /path/to/docker-compose-dir
           cd /path/to/docker-compose-dir
+
+          # Pull the latest image and restart services
+          docker pull ${{ secrets.DOCKER_USERNAME }}/fastapi_server:latest
           docker-compose down
           docker-compose up -d
           EOF
