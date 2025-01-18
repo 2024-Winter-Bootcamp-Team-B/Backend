@@ -41,7 +41,7 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: .
-          file: ./Dockerfile
+          file: /home/runner/work/Backend/Backend/Dockerfile
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/fastapi_server:latest
 
