@@ -31,6 +31,11 @@ def process_image_task(image_path: str, requested_hand_shape: list):
      Mediapipe를 사용해 이미지를 분석하고 결과를 FastAPI 서버로 전달.
     """
     try:
+        # 파일 경로 유효성 확인 코드 추가
+        print(f"Looking for file at: {image_path}")  # 디버깅용 로그 추가
+        if not os.path.exists(image_path):
+            raise ValueError(f"File not found: {image_path}")
+        
         pattern = r"user_(\d+)_(\d{8}T\d{6}Z)_"
         match = re.search(pattern, image_path)
         if match:
@@ -54,16 +59,29 @@ def process_image_task(image_path: str, requested_hand_shape: list):
         #     }
         # }
 
-        response = requests.post(
-            "http://fastapi:8000/photo/result",
-            json={
-                "user_id": response_info["user_id"],
-                "timestamp": response_info["timestamp"].isoformat(),
-                "result": 1 if analysis_result["match"] else 0,  # match 값을 정수로 변환
-            }
-        )
-        response.raise_for_status()  # 요청 에러 발생 시 예외 처리
+        # 결과를 FastAPI 서버로 전달
+        try:
+            response = requests.post(
+                "http://fastapi:8000/photo/result",
+                json={
+                    "user_id": response_info["user_id"],
+                    "timestamp": response_info["timestamp"],  # ISO 형식 타임스탬프
+                    "result": 1 if analysis_result["match"] else 0,  # match 값을 정수로 변환
+                }
+            )
+            response.raise_for_status()  # 요청 에러 발생 시 예외 처리
+
+            # 요청 성공 시 로그 추가
+            print(f"POST request to /photo/result successful: {response.status_code}")
+            print(f"Response content: {response.json()}")
+
+        except requests.RequestException as e:
+            # 요청 실패 시 로그 추가
+            print(f"Error sending POST request to /photo/result: {e}")
+            raise
+
         return analysis_result  # 작업 결과 반환
+    
     except Exception as e:
         # 에러 로깅
         print(f"Error processing image: {e}")

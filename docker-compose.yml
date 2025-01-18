@@ -7,6 +7,8 @@ services:
       context: .  # Dockerfile의 위치를 지정
       dockerfile: Dockerfile
     container_name: fastapi_server
+    volumes:
+      - ./uploaded_images:/app/uploaded_images  # 로컬 루트 디렉토리의 uploaded_images와 컨테이너 내부 경로를 매핑
     ports:
       - "8000:8000"
     env_file:
@@ -48,6 +50,8 @@ services:
     container_name: celery_worker
     volumes:
       - .:/app
+      - ./uploaded_images:/app/uploaded_images  # 로컬 루트 디렉토리의 uploaded_images와 컨테이너 내부 경로를 매핑
+
     working_dir: /app
     command: >
       sh -c "apt-get update &&
@@ -65,3 +69,4 @@ services:
     depends_on:
       - rabbitmq
       - mysql
+      - fastapi
