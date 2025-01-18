@@ -23,12 +23,15 @@ async def unblock_sites(user_id: int, result: int, db: Session = Depends(get_db)
                 status_code=400,
                 detail="손 모양이 요청한 모양과 일치하지 않아서 차단 해제를 진행하지 않았습니다."
             )
+        print(f"Processing unblock request for user_id: {user_id} with result: {result}")
 
         # 2. 차단된 사이트 해제
         unblock_sites_by_user(db, user_id)
+        print(f"Unblocked sites for user_id: {user_id}")
 
         # 3. Celery 작업으로 파일 정리
         cleanup_user_files_task.delay(user_id)
+        print(f"Scheduled cleanup task for user_id: {user_id}")
 
         # 4. 성공 응답 반환
         return {"message": "모든 차단된 사이트가 해제되었습니다.", "user_id": user_id}
