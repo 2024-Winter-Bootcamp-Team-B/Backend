@@ -56,10 +56,14 @@ jobs:
           mkdir -p ~/docker-compose-dir
           cd ~/docker-compose-dir
 
+          if [ $(df --output=pcent / | tail -n 1 | tr -d '%') -ge 80 ]; then
+          docker system prune -af
+          fi
+
           # Pull the latest image and restart services
           docker pull ${{ secrets.DOCKER_USERNAME }}/fastapi_server:latest
-          docker compose down
-          docker compose up -d
+          docker-compose down
+          docker-compose up -d
           EOF
         env:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
