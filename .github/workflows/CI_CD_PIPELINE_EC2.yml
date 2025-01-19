@@ -76,7 +76,7 @@ jobs:
           fi
 
           # Pull the latest image and restart services
-          docker pull ${{ secrets.DOCKER_USERNAME }}/fastapi_server:latest
+          # docker pull ${{ secrets.DOCKER_USERNAME }}/fastapi_server:latest
           docker-compose down
           docker-compose up -d
           EOF
