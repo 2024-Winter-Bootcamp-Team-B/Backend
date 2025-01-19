@@ -24,3 +24,5 @@ def add_site(db : Session, request_siteURL : str):
     db.refresh(new_site)
     return new_site
 
+def all_site(db : Session):
+    return db.query(Site).all()

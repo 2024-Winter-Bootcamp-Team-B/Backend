@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 
 router = APIRouter()
 
-@router.get("/statistic/{user_id}")
+@router.get("/statistic/{request_user_id}")
 async def user_statistic(request_user_id: int, db: Session = Depends(get_db)):
     
     try :
