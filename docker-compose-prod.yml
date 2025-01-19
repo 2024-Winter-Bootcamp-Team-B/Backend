@@ -1,7 +1,7 @@
 services:
   # FastAPI 서버
   fastapi:
-    image: ${{ secrets.DOCKER_USERNAME }}/fastapi_server:latest
+    image: $DOCKER_USERNAME/fastapi_server:latest
     container_name: fastapi_server
     ports:
       - "8000:8000"
