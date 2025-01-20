@@ -18,6 +18,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      # Check checkout files
+      - name: List files for debugging
+        run: ls -a
+
+      - name: pwd
+        run: pwd
+
       # Set up Docker Buildx
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
@@ -41,15 +48,34 @@ jobs:
       # Create SSH private key
       - name: Create SSH private key
         run: |
+          mkdir -p ~/.ssh
           echo "${{ secrets.EC2_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-
+      # Upload docker-compose.yml
+      - name: Upload docker-compose-prod.yml
+        run: |
+          scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa docker-compose-prod.yml ec2-user@${{ secrets.EC2_IP }}:~/docker-compose.yml
+      # Upload requirements.txt
+      - name: Upload requirements.txt
+        run: |
+          scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa requirements.txt ec2-user@${{ secrets.EC2_IP }}:~/requirements.txt
+      # Upload .env file content from secrets
+      - name: Upload .env file
+        run: |
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ec2-user@${{ secrets.EC2_IP }} << 'EOF'
+          echo "${{ secrets.ENV_FILE }}" > ~/.env
+          EOF
       # Deploy to EC2
       - name: Deploy on EC2
         run: |
           ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ec2-user@${{ secrets.EC2_IP }} << 'EOF'
-          docker pull ${{ secrets.DOCKER_USERNAME }}/fastapi_server:latest
-          cd /path/to/docker-compose-dir
+          # Docker login
+          docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+          if [ $(df --output=pcent / | tail -n 1 | tr -d '%') -ge 80 ]; then
+          docker system prune -af
+          fi
+          # Pull the latest image and restart services
+          # docker pull ${{ secrets.DOCKER_USERNAME }}/fastapi_server:latest
           docker-compose down
           docker-compose up -d
           EOF
