@@ -7,6 +7,7 @@ from app.routers.site_api import router as site_router
 from app.routers.login_api import router as login_router
 from app.routers.block_api import router as block_router
 from app.routers.unblock_api import router as unblock_router
+from app.routers.save_analysis_api import router as analysis_router
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.models import Base
@@ -60,6 +61,8 @@ app.include_router(block_router, tags=["Block"])
 app.include_router(blocked_site_router, prefix="/lock", tags=["Blocked Sites Check"])
 
 app.include_router(image_router, tags=["Image"])
+
+app.include_router(analysis_router, tags=["Analysis"])
 
 app.include_router(unblock_router, tags=["Blocked Sites Clear"])
 
