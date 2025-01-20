@@ -8,10 +8,6 @@ WORKDIR /app
 RUN apt-get update && \
     apt-get install -y libgl1 libglib2.0-0 libmariadb-dev gcc pkg-config
 
-# wait-for-it.sh 복사
-COPY wait-for-it.sh /app/wait-for-it.sh
-RUN chmod +x /app/wait-for-it.sh
-
 # 프로젝트 파일 복사
 COPY . /app
 
