@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Request
 from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 from app.database import get_db
@@ -11,8 +11,16 @@ import shutil
 
 router = APIRouter()
 
+# 내부 호출 전용 비밀 키
+INTERNAL_SECRET_KEY = os.getenv("INTERNAL_SECRET_KEY")
+
+def verify_internal_access(request: Request):
+    secret_key = request.headers.get("X-Internal-Key")
+    if secret_key != INTERNAL_SECRET_KEY:
+        raise HTTPException(status_code=403, detail="Unauthorized access to this endpoint.")
+
 @router.post("/lock/unblock/{user_id}")
-async def unblock_sites(user_id: int, result: int, db: Session = Depends(get_db)):
+async def unblock_sites(user_id: int, result: int, db: Session = Depends(get_db), _: None = Depends(verify_internal_access)):
     """
     차단 해제 API: 손 모양이 요청된 형태와 일치할 경우 차단된 사이트 해제
     """

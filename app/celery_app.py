@@ -34,6 +34,7 @@ def process_image_task(image_path: str, requested_hand_shape: list):
         # 파일 경로 유효성 확인 코드 추가
         print(f"Looking for file at: {image_path}")  # 디버깅용 로그 추가
         if not os.path.exists(image_path):
+            print(f"File not found: {image_path}")
             raise ValueError(f"File not found: {image_path}")
         
         pattern = r"user_(\d+)_(\d{8}T\d{6}Z)_"
