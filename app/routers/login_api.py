@@ -199,13 +199,27 @@ async def user_login(request : Request, db : Session = Depends(get_db)):
     if user is None :
         raise HTTPException(status_code=400, detail="아이디 혹은 비밀번호 오류")
     
+    request.session["user_id"] = user.id
+    
     return JSONResponse(
         status_code=200,
         content={
             "message": "성공",
             "user_id" : user.id,
-            "user_login_id" : user.login_id,
-            "user_name" : user.user_name,
-            "user_email" : user.email
+            "user_name" : user.user_name
         }
     )
+
+@router.get("/user/me")
+async def get_current_user(request : Request, db : Session = Depends(get_db)):
+    user_id = request.session.get("user_id")
+
+    if not user_id :
+        return JSONResponse(status_code=200, content={"message": "로그인이 필요합니다"})
+
+    user = get_user_by_id(db, user_id)
+
+    if not user :
+        return JSONResponse(status_code=200, content={"message": "사용자 정보를 찾을 수 없습니다"})
+    
+    return JSONResponse(status_code=200, content={"message": "성공", "user_name" : user.user_name})
