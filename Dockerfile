@@ -6,7 +6,7 @@ WORKDIR /app
 
 # 시스템 의존성 설치
 RUN apt-get update && \
-    apt-get install -y libgl1 libglib2.0-0 libmariadb-dev gcc pkg-config
+    apt-get install -y libgl1 libglib2.0-0 libmariadb-dev gcc pkg-config ffmpeg libsm6 libxext6
 
 # 프로젝트 파일 복사
 COPY . /app

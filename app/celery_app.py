@@ -43,14 +43,17 @@ def process_image_task(image_path: str, requested_hand_shape: list):
             user_id = match.group(1)  # 첫 번째 그룹: user_id
             timestamp = match.group(2)  # 두 번째 그룹: timestamp
             response_info = {"user_id": user_id, "timestamp": timestamp}
+            print(f"Extracted response_info: {response_info}")
         else:
             raise ValueError(f"Invalid image_path format: {image_path}")
 
+        print(f"Before calling analyze_image: {image_path}, {requested_hand_shape}") # 로그 추가
         # Mediapipe를 이용한 이미지 분석
         analysis_result = analyze_image(image_path, requested_hand_shape)
 
-        # 결과를 FastAPI 서버로 전달 -> 아래와 같은 구조로 전달됨
+        print(f"Analysis result: {analysis_result}")
 
+        # 결과를 FastAPI 서버로 전달 -> 아래와 같은 구조로 전달됨
         # {
         #     "user_id": "user_id값",  // 이미지와 연결된 사용자 ID
         #     "timestamp": "ISO형식 타임스탬프",  // 요청의 생성 시간
@@ -62,6 +65,7 @@ def process_image_task(image_path: str, requested_hand_shape: list):
 
         # 결과를 FastAPI 서버로 전달
         try:
+            print(f"Sending result to FastAPI server: {analysis_result}")  # 전송 전 로그
             response = requests.post(
                 "http://fastapi:8000/photo/result",
                 json={
@@ -70,6 +74,7 @@ def process_image_task(image_path: str, requested_hand_shape: list):
                     "result": 1 if analysis_result["match"] else 0,  # match 값을 정수로 변환
                 }
             )
+            print(f"Response from FastAPI server: {response.status_code}, {response.content}")  # 응답 로그
             response.raise_for_status()  # 요청 에러 발생 시 예외 처리
 
             # 요청 성공 시 로그 추가
