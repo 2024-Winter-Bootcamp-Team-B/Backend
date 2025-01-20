@@ -7,7 +7,7 @@ from app.crud.site import add_site
 from app.crud.user import add_user
 
 from app.models import Base
-from conftest import reset_database
+from tests.conftest import reset_database
 """
 테스트 해야할 것 
 1. get_blocked_sites

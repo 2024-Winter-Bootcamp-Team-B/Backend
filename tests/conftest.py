@@ -2,6 +2,7 @@ import pytest, os
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import Session
 from app.database import Base, get_db, engine as default_engine
 from app.main import app
 
@@ -56,3 +57,19 @@ def client(db_session):
 @pytest.fixture(scope="session", autouse=True)
 def set_testing_env():
     os.environ["TESTING"] = "TRUE"
+
+
+def reset_database(session: Session, metadata: Base.metadata):
+    """
+    데이터베이스를 초기화하는 함수.
+    스키마를 삭제하고 다시 생성합니다.
+
+    :param session: SQLAlchemy Session 객체
+    :param metadata: SQLAlchemy Base.metadata 객체
+    """
+    print("Resetting database...")
+    # 기존 테이블 삭제
+    metadata.drop_all(bind=TEST_ENGINE)
+    # 새 테이블 생성
+    metadata.create_all(bind=TEST_ENGINE)
+    print("Database reset complete.")
