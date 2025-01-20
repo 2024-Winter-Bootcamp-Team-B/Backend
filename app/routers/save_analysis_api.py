@@ -27,6 +27,7 @@ async def save_analysis_result(data: AnalysisResultSchema):
         unblock_url = f"http://fastapi:8000/lock/unblock/{user_id}"
 
         async with httpx.AsyncClient() as client:
+            print(f"Sending request to unblock_url: {unblock_url} with result: {result}")   
             response = await client.post(
                 unblock_url,
                 json={"result": result},
@@ -35,6 +36,9 @@ async def save_analysis_result(data: AnalysisResultSchema):
                 # json={"result": result, "timestamp": timestamp.isoformat()}
                 # timestamp가 필요한 경우 주석 해제
             )
+
+            print(f"Response status code: {response.status_code}")
+            print(f"Response content: {response.content}")
             response.raise_for_status()
 
         print(f"Unblock request successful for user_id: {user_id}")

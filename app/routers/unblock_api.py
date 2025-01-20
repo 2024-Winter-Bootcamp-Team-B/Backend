@@ -1,10 +1,12 @@
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Request
 from fastapi.responses import JSONResponse
+from httpx import request
 from sqlalchemy.orm import Session
 from app.database import get_db
 from app.crud.lock import unblock_sites_by_user
 from app.services.mediapipe_service import analyze_image
 from app.celery_app import cleanup_user_files_task  # Celery 작업 불러오기
+from pydantic import BaseModel
 
 import os
 import shutil
@@ -18,12 +20,21 @@ def verify_internal_access(request: Request):
     secret_key = request.headers.get("X-Internal-Key")
     if secret_key != INTERNAL_SECRET_KEY:
         raise HTTPException(status_code=403, detail="Unauthorized access to this endpoint.")
+    
+# 요청 본문 데이터 모델 정의
+class UnblockRequest(BaseModel):
+    result: int
 
 @router.post("/lock/unblock/{user_id}")
-async def unblock_sites(user_id: int, result: int, db: Session = Depends(get_db), _: None = Depends(verify_internal_access)):
+async def unblock_sites(user_id: int, request_body: UnblockRequest, request: Request, db: Session = Depends(get_db), _: None = Depends(verify_internal_access)):
     """
     차단 해제 API: 손 모양이 요청된 형태와 일치할 경우 차단된 사이트 해제
     """
+    result = request_body.result
+
+    print(f"Request headers: {request.headers}")  # 헤더 출력
+    print(f"Received request for user_id: {user_id}, result: {result}")  # 기존 로그
+
     try:
         # 1. 분석 결과 확인
         if result != 1:  # 1이 아니면 요청 거절
