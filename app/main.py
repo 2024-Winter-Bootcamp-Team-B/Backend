@@ -10,8 +10,8 @@ from app.routers.unblock_api import router as unblock_router
 from app.routers.save_analysis_api import router as analysis_router
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.models import Base
-from app.database import engine
+
+from app.database import engine, Base
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.sessions import SessionMiddleware
 import os

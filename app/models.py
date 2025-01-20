@@ -7,9 +7,9 @@
 from sqlalchemy import Column, Integer, String, Boolean, DateTime, ForeignKey
 from sqlalchemy.orm import relationship, declarative_base
 from datetime import datetime
+from app.database import Base
 import pytz
 
-Base = declarative_base()
 KST = pytz.timezone("Asia/Seoul")
 
 # -----------------------------------------------------

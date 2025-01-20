@@ -1,4 +1,6 @@
 from datetime import datetime, timedelta
+from app.database import Base
+from tests.conftest import reset_database
 from app.crud.history import add_history, get_histories, update_history
 import pytz
 
@@ -10,6 +12,7 @@ import pytz
 """
 
 def test_add_history(db_session):
+    reset_database(db_session,Base.metadata)
     #given
     test_user_id = 1
     test_start_time = datetime.now()
@@ -24,6 +27,7 @@ def test_add_history(db_session):
     assert test_history.user_id == test_user_id
 
 def test_get_histories(db_session):
+    reset_database(db_session,Base.metadata)
     #given
     user_id = 1
     start_time = datetime.now()
@@ -40,7 +44,7 @@ def test_get_histories(db_session):
 
 
 def test_update_history(db_session):
-
+    reset_database(db_session,Base.metadata)
     # Given
     test_history01 = add_history(db_session, 1, datetime.now(), datetime.now() + timedelta(hours=1))
     test_history02 = add_history(db_session, 1, datetime.now(), datetime.now() + timedelta(hours=1))
