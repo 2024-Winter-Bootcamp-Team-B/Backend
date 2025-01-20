@@ -12,6 +12,7 @@ services:
     depends_on:
       - rabbitmq
       - mysql
+    restart: on-failure:5
 
   # RabbitMQ
   rabbitmq:
