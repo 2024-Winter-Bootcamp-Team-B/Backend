@@ -46,6 +46,9 @@ def analyze_image(image_path: str, requested_hand_shape: list):
     """
     업로드된 이미지를 분석하여 결과를 반환.
     """
+
+    print(f"Starting analysis for file: {image_path}")  # 로그 추가
+
     image = cv2.imread(image_path) # 이미지 읽기 & 실패 시 예외 처리
     if image is None:
         raise ValueError("이미지 로드 실패")
