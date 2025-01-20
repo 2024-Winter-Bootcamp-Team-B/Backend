@@ -65,6 +65,15 @@ jobs:
           ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ec2-user@${{ secrets.EC2_IP }} << 'EOF'
           echo "${{ secrets.ENV_FILE }}" > ~/.env
           EOF
+      # Disk cleanup on EC2 (new logic)
+      - name: Clean up disk space on EC2
+        run: |
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ec2-user@${{ secrets.EC2_IP }} << 'EOF'
+          echo "Cleaning disk space..."
+          sudo rm -rf /var/log/*.gz /var/log/*.1
+          sudo apt-get clean
+          echo "Disk cleanup completed."
+          EOF
       # Deploy to EC2
       - name: Deploy on EC2
         run: |
