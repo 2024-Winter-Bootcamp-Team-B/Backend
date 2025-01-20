@@ -51,6 +51,18 @@ jobs:
           mkdir -p ~/.ssh
           echo "${{ secrets.EC2_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
+      # Create app directory on EC2
+      - name: Create app directory on EC2
+        run: |
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ec2-user@${{ secrets.EC2_IP }} "mkdir -p ~/app"
+      # Upload 'services' directory
+      - name: Upload services directory
+        run: |
+          scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa -r ./app/services ec2-user@${{ secrets.EC2_IP }}:~/app/services
+      # Upload celery_app.py
+      - name: Upload celery_app.py
+        run: |
+          scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ./app/celery_app.py ec2-user@${{ secrets.EC2_IP }}:~/app/celery_app.py
       # Upload docker-compose.yml
       - name: Upload docker-compose-prod.yml
         run: |
@@ -64,6 +76,15 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ec2-user@${{ secrets.EC2_IP }} << 'EOF'
           echo "${{ secrets.ENV_FILE }}" > ~/.env
+          EOF
+      # Disk cleanup on EC2 (new logic)
+      - name: Clean up disk space on EC2
+        run: |
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ec2-user@${{ secrets.EC2_IP }} << 'EOF'
+          echo "Cleaning disk space..."
+          sudo rm -rf /var/log/*.gz /var/log/*.1
+          sudo apt-get clean
+          echo "Disk cleanup completed."
           EOF
       # Deploy to EC2
       - name: Deploy on EC2

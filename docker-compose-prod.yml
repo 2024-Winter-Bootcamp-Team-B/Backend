@@ -44,9 +44,11 @@ services:
              pip install --no-cache-dir -r requirements.txt &&
              celery -A app.celery_app worker --loglevel=info"
     environment:
-      - PYTHONPATH=/app
+      - PYTHONPATH=/app/Backend
     env_file:
       - .env
     depends_on:
       - rabbitmq
       - mysql
+
+
