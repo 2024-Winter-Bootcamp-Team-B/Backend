@@ -42,7 +42,7 @@ services:
       sh -c "apt-get update &&
              apt-get install -y libgl1 libglib2.0-0 libmariadb-dev gcc pkg-config &&
              pip install --no-cache-dir -r requirements.txt &&
-             celery -A app.celery_app worker --loglevel=info"
+             celery -A app.app.celery_app worker --loglevel=info"
     environment:
       - PYTHONPATH=/app
     env_file:
