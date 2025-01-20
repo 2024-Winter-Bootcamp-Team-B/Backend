@@ -1,5 +1,6 @@
-from app.crud.user import add_user, get_user_by_email, get_user_by_id
-from app.models import User
+from tests.conftest import reset_database
+from app.crud.user import *
+from app.database import Base
 """
 테스트 해야할 것 
 1. get_user_by_email
@@ -14,6 +15,7 @@ from app.models import User
 """
 
 def test_user_all(db_session):
+    reset_database(db_session,Base.metadata)
     #given
     test_login_id = "test01"
     test_login_password = "test01"

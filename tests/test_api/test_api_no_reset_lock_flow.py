@@ -3,12 +3,11 @@ from fastapi.testclient import TestClient
 import pytest
 
 from app.crud.lock import get_blocked_sites
-from app.crud.site import add_site, all_site, get_most_blocked_site
+from app.crud.site import add_site, get_most_blocked_site
 from app.crud.user import add_user, get_user_by_id
 from app.main import app
-
-from app.models import Base
 from tests.conftest import reset_database
+from app.database import Base
 client = TestClient(app)
 
 """
@@ -26,6 +25,7 @@ response = client.post(
 
 @pytest.mark.order(1)
 def test_most_locked_site_v1(db_session):
+    reset_database(db_session,Base.metadata)
     """
     누적 차단 횟수 많은 사이트 API :아무런 정보가 없을 때 (최초에) 가장 많이 차단된 사이트를 요구할 때
     """
@@ -82,7 +82,13 @@ def test_user_history(db_session):
 
     #when
     response = client.get(f"/statistic/{request_test_user_id}")
-    response_result = response.json()["result"]
+
+    print("Response Status Code:", response.status_code)  # 상태 코드 출력
+    print("Response Headers:", response.headers)  # 응답 헤더 출력
+    print("Response JSON:", response.json())  # JSON 응답 출력
+    
+    response_result = response.json().get("result", None)  # 'result' 키 가져오기
+    
 
     #then
     assert response.status_code == 200
@@ -93,6 +99,7 @@ def test_user_history(db_session):
         assert entry["user_id"] == request_test_user_id
 
 
+@pytest.mark.order(4)
 def test_user_blocked_sites(db_session):
     """
     특정 사용자가 차단한 사이트 목록을 반환 API
