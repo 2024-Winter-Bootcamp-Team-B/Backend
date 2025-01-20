@@ -1,15 +1,17 @@
 from datetime import datetime, timedelta
 from app.crud.history import add_history, get_histories, update_history
 import pytz
-
+from app.models import Base
+from tests.conftest import reset_database
 """
 테스트 해야할 것 
 1. add_history
 2. get_histories
-3. update_hisory
+3. update_history
 """
 
 def test_add_history(db_session):
+    reset_database(db_session, Base.metadata)
     #given
     test_user_id = 1
     test_start_time = datetime.now()
@@ -24,6 +26,7 @@ def test_add_history(db_session):
     assert test_history.user_id == test_user_id
 
 def test_get_histories(db_session):
+    reset_database(db_session, Base.metadata)
     #given
     user_id = 1
     start_time = datetime.now()
@@ -35,12 +38,12 @@ def test_get_histories(db_session):
     histories01 = get_histories(db_session, user_id)
     histories02 = get_histories(db_session, 2)
     #then
-    assert len(histories01) == 2 
+    assert len(histories01) == 2
     assert len(histories02) == 0
 
 
 def test_update_history(db_session):
-
+    reset_database(db_session, Base.metadata)
     # Given
     test_history01 = add_history(db_session, 1, datetime.now(), datetime.now() + timedelta(hours=1))
     test_history02 = add_history(db_session, 1, datetime.now(), datetime.now() + timedelta(hours=1))

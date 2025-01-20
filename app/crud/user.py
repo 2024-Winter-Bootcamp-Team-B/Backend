@@ -18,6 +18,7 @@ def add_user(db : Session,
     )
     db.add(new_user)
     db.commit()
+    db.refresh(new_user)
     return new_user
 
 def get_user_by_id(db : Session, request_id : int):

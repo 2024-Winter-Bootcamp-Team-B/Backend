@@ -4,12 +4,13 @@
 '''
 #EX>
 
+
 from sqlalchemy import Column, Integer, String, Boolean, DateTime, ForeignKey
-from sqlalchemy.orm import relationship, declarative_base
+from app.database import Base
 from datetime import datetime
+
 import pytz
 
-Base = declarative_base()
 KST = pytz.timezone("Asia/Seoul")
 
 # -----------------------------------------------------

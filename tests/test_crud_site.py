@@ -1,16 +1,4 @@
-"""
-테스트 해야할 것 
-1. get_most_blocked_site
-2. site_exist_check
-3. add_site
-"""
-
-"""
-#given
-#when
-#then
-"""
-from app.crud.site import add_site, get_most_blocked_site, site_exist_check
+from app.crud.site import *
 
 
 def test_add_site(db_session) :
