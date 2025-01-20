@@ -55,10 +55,10 @@ jobs:
       - name: Create app directory on EC2
         run: |
           ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ec2-user@${{ secrets.EC2_IP }} "mkdir -p ~/app"
-      # Upload mediapipe_service.py
-      - name: Upload mediapipe_service.py
+      # Upload 'services' directory
+      - name: Upload services directory
         run: |
-          scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ./app/services/mediapipe_service.py ec2-user@${{ secrets.EC2_IP }}:~/app/services/mediapipe_service.py
+          scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa -r ./app/services ec2-user@${{ secrets.EC2_IP }}:~/app/services
       # Upload celery_app.py
       - name: Upload celery_app.py
         run: |
