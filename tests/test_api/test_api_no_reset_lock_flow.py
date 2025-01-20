@@ -7,7 +7,8 @@ from app.crud.site import add_site, all_site, get_most_blocked_site
 from app.crud.user import add_user, get_user_by_id
 from app.main import app
 
-
+from app.models import Base
+from tests.conftest import reset_database
 client = TestClient(app)
 
 """
@@ -91,7 +92,7 @@ def test_user_history(db_session):
         assert "user_id" in entry
         assert entry["user_id"] == request_test_user_id
 
-@pytest.mark.order(4)
+
 def test_user_blocked_sites(db_session):
     """
     특정 사용자가 차단한 사이트 목록을 반환 API
@@ -101,9 +102,9 @@ def test_user_blocked_sites(db_session):
     test_user = get_user_by_id(db_session,1)
     sites = get_blocked_sites(db_session, request_test_user_id)
     #when
-    response = client.get(f"/blocked-site/{request_test_user_id}")
+    response = client.get(f"/lock/blocked-site/{request_test_user_id}")
     #then
-    # assert response.status_code == 200
-    # assert response.json()["user_id"] == request_test_user_id 
+    assert response.status_code == 200
+    assert response.json()["user_id"] == request_test_user_id
     assert sites is not None
     
