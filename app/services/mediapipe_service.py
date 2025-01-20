@@ -4,7 +4,7 @@ import numpy as np
 
 # Mediapipe 초기화
 mp_hands = mp.solutions.hands
-hands = mp_hands.Hands(static_image_mode=True, max_num_hands=1, min_detection_confidence=0.8)
+# hands = mp_hands.Hands(static_image_mode=True, max_num_hands=1, min_detection_confidence=0.8, model_complexity=0)  # GPU 비활성화 추가
 mp_drawing = mp.solutions.drawing_utils
 
 def get_finger_status(landmarks):
@@ -53,8 +53,37 @@ def analyze_image(image_path: str, requested_hand_shape: list):
     if image is None:
         raise ValueError("이미지 로드 실패")
 
-    image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB) # BGR 이미지를 RGB로 변환
-    results = hands.process(image_rgb) # Mediapipe로 이미지 처리
+    # 이미지 크기 확인
+    if image.size == 0:
+        raise ValueError("이미지 크기가 0입니다. 손상된 파일일 수 있습니다.")
+
+    # BGR -> RGB 변환
+    try:
+        image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        print("이미지 RGB 변환 성공")
+    except Exception as e:
+        raise ValueError(f"이미지 RGB 변환 실패: {str(e)}")
+    
+    # try:
+    #     print("mediapipe로 이미지 처리 전")  # 디버깅용 로그 추가
+    #     print(f"Starting Mediapipe process for file: {image_path}")  # 로그 추가
+    #     print(image_rgb.shape)  # (높이, 너비, 3) 형태로 출력되어야 함
+    #     results = hands.process(image_rgb) # Mediapipe로 이미지 처리
+    #     print("mediapipe로 이미지 처리 후")  # 디버깅용 로그 추가
+    # except Exception as e:
+    #     raise ValueError(f"Mediapipe 이미지 처리 실패: {str(e)}")
+    
+        # Hands 객체 동적 생성
+    with mp.solutions.hands.Hands(
+        static_image_mode=True, 
+        max_num_hands=1, 
+        min_detection_confidence=0.8
+    ) as hands:
+        print("mediapipe로 이미지 처리 전")
+        print(f"Starting Mediapipe process for file: {image_path}")  # 로그 추가
+        results = hands.process(image_rgb)
+        print("mediapipe로 이미지 처리 후")
+
 
     if results.multi_hand_landmarks: # 손이 감지된 경우
         for hand_landmarks in results.multi_hand_landmarks:
