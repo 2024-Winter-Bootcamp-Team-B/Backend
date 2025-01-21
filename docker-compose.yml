@@ -72,3 +72,12 @@ services:
       - rabbitmq
       - mysql
       - fastapi
+      
+  tests:
+    build:
+      context: .
+    depends_on:
+      - fastapi
+    command: pytest -s tests
+    environment:
+      TESTING: "TRUE"

@@ -20,7 +20,7 @@ async def upload_image(user_id: int = Form(...) , file: UploadFile = File(...)):
     """
     try:
         print(f"User ID: {user_id}, File Name: {file.filename}")
-        
+        print("TEST O1")
         # 디렉토리 생성
         os.makedirs(UPLOAD_DIR, exist_ok=True)
 
@@ -46,9 +46,10 @@ async def upload_image(user_id: int = Form(...) , file: UploadFile = File(...)):
         # Celery 작업 호출 -> 아무리 봐도 셀러리 작업을 여기서 호출하는게 맞는거 같음
 
         requested_hand_shape = [1, 1, 1, 1, 1]  # 예: 다섯 손가락 모두 펴짐 
+        print("TEST 02")
         ###### 이거는 나중에 수정해야함 -> 프론트에서 넘어온 값으로
         task = process_image_task.delay(file_path, requested_hand_shape)
-
+        print("TEST 03")
         return {
             "message": "File uploaded and analysis started",
             "file_path": file_path,

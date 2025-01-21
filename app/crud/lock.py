@@ -34,7 +34,7 @@ def add_block_sites(
         request_user_id : int, 
         request_siteURLs : List[str],
         request_goal_time : datetime):
-    
+    locked_site = []
     for siteURL in request_siteURLs : 
         
         # 차단 기록이 있는 사이트인지 체크
@@ -54,6 +54,9 @@ def add_block_sites(
         new_locked = add_locked(db, request_user_id, exist_site.id, request_goal_time)
         print(f"New lock added: {new_locked.user_id}, {new_locked.site_id}")
         db.commit()
+        locked_site.append(new_locked)
+    return locked_site
+    
 # 진짜 디비에 차단하기
 def add_locked(db : Session, request_user_id : int, request_site_id : int, request_goal_time : datetime):
     new_lock = Locked(
