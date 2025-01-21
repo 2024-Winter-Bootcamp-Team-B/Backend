@@ -1,0 +1,70 @@
+name : TEST dev branch and MERGE to main branch
+
+on :
+  pull_request: #dev 브랜치로 머지하려는 모든 PR에서 실행 (조건)
+    branches:
+      - dev 
+
+jobs :
+  test-dev :
+    runs-on : ubuntu-latest
+    
+    steps : 
+      # 현재 플리퀘 코드를 가져옴
+      -name : Checkout code
+       uses : actions/checkout@v3
+       
+      # 도커 컴포스 설정
+      -name : Set up Docker Compose
+       run : |
+         sudo apt-get update
+         sudo apt-get install -y docker-compose
+
+      # 도커 컴포스 시작
+      -name : Start Docker Compose services
+       run : |
+         docker-compose -f docker-compose.yml up -d
+
+      # 서비스 준비될 때까지 대기
+      -name : Wait for service to be ready
+       run : |
+         sleep 20
+
+      # 테스트 실행
+      - name : Run tests 
+        run : |
+          docker-compose -f docker-compose.yml run tests
+
+      # 테스트 정리
+      - name : Down tests
+        run : |
+          docker-compose -f docker-compose.yml down
+
+merge :
+  needs : test-dev # jobs의 task 이름?
+  runs-on : ubuntu-latest
+  if : success() # 위의 job이 별 일 없이 끝나면 걍 success가 된다고 함
+
+  steps :
+    # 현재 플리퀘 코드를 가져옴
+    -name : Checkout code
+     uses : actions/checkout@v3
+
+    # git 설정하기
+    -name : Configure Git
+     run : |
+       git config --global user.name "chaan32"
+       git config --global user.email "haechan8864@naver.com"
+
+    # dev -> main 병합하기
+    -name : Merge dev into main
+     run : |
+       git checkout main
+       git merge dev --no-ff
+       git push origin main
+    
+
+
+
+
+      
