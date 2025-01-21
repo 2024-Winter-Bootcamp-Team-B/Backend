@@ -4,6 +4,9 @@ on :
   pull_request: #dev 브랜치로 머지하려는 모든 PR에서 실행 (조건)
     branches:
       - dev 
+  push:
+    branches:
+      - dev
 
 jobs :
   test-dev :
