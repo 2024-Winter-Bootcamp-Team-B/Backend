@@ -57,6 +57,8 @@ jobs :
       # 현재 플리퀘 코드를 가져옴
       - name : Checkout code
         uses : actions/checkout@v3
+        with :
+          fetch-depth : 0
 
     # git 설정하기
       - name : Configure Git
