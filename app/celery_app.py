@@ -28,6 +28,7 @@ celery_app.conf.update(
 
 @celery_app.task
 def process_image_task(image_path: str, requested_hand_shape: list):
+    print("----celery----")
     """
      Mediapipe를 사용해 이미지를 분석하고 결과를 FastAPI 서버로 전달.
     """

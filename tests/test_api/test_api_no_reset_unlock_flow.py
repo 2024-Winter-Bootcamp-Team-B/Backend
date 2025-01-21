@@ -26,7 +26,7 @@ def test_setting_lock_data(db_session):
     test_locked = add_block_sites(db_session, test_user.id, test_sites, datetime.now())
 
 
-    
+
     assert test_user is not None
     assert test_user.id == 1
     assert test_locked is not None
@@ -37,7 +37,7 @@ def test_setting_lock_data(db_session):
 def test_uplockflow():
     #given
     test_user_id = 1
-    test_image_path = "/Users/haechan/Desktop/techeer/00000~11111 /11111.jpg"
+    test_image_path = "image/11111.jpg"
     
     #when
     try :
@@ -49,7 +49,7 @@ def test_uplockflow():
             )
             # 상태 코드 출력
             print("Status Code at TESTING :", response.status_code)
-
+            response_json = response.json()
             # JSON 응답 출력
             try:
                 print("Response JSON at TESTING :", response.json())
@@ -59,8 +59,8 @@ def test_uplockflow():
         print("파일 못 찾는다")
         
     #then
-    # assert "message" in response_json
-    # assert response_json["message"] == "File uploaded and analysis started"
+    assert "message" in response_json
+    assert response_json["message"] == "File uploaded and analysis started"
 
-    # assert "file_path" in response_json
-    # assert "task_id" in response_json
+    assert "file_path" in response_json
+    assert "task_id" in response_json
