@@ -59,5 +59,5 @@ def test_user_login():
     )
     assert response.status_code == 200
     assert response.json()["message"] == "성공"
-    assert response.json()["user_login_id"] == "test"
+    assert response.json()["user_name"] == "test_user"
     assert response.json()["user_id"] == 1
