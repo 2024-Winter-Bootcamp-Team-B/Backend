@@ -47,28 +47,3 @@ jobs :
       - name : Down tests
         run : |
           docker-compose -f docker-compose.yml down
-
-  merge :
-    needs : test-dev # jobs의 task 이름?
-    runs-on : ubuntu-latest
-    if : success() # 위의 job이 별 일 없이 끝나면 걍 success가 된다고 함
-
-    steps :
-      # 현재 플리퀘 코드를 가져옴
-      - name : Checkout code
-        uses : actions/checkout@v3
-        with :
-          fetch-depth : 0
-
-    # git 설정하기
-      - name : Configure Git
-        run : |
-          git config --global user.name "chaan32"
-          git config --global user.email "haechan8864@naver.com"
-
-      # dev -> main 병합하기
-      - name : Merge dev into main
-        run : |
-          git checkout main
-          git merge dev --no-ff
-          git push origin main
