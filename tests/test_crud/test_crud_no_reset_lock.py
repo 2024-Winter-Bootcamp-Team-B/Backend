@@ -1,26 +1,12 @@
+import logging, pytest
 from datetime import datetime
-import logging
-
-import pytest
-from app.crud.lock import add_block_sites, add_locked, get_blocked_sites, unblock_sites_by_user
+from app.crud.lock import *
 from app.crud.site import add_site
 from app.crud.user import add_user
 
 from app.database import Base
 from tests.conftest import reset_database
-"""
-테스트 해야할 것 
-1. get_blocked_sites
-2. unblock_sites_by_user
-3. add_block_sites
-4. add_locked
-"""
 
-"""
-#given
-#when
-#then
-"""
 
 @pytest.mark.order(1)
 def test_set_locked_info(db_session):
@@ -52,17 +38,6 @@ def test_add_locked(db_session):
 
     pass
 
-
-# @pytest.mark.order(3)
-# def test_add_block_site_version01(db_session):
-#     #given
-#     test_user_id = 1
-#     test_goal_time = datetime.now()
-#         # 이미 등록되어 있는 사이트만 차단하는 경우
-#     test_sites = ["example01.com", "example02.com"]
-#     #when
-#     add_block_sites(db_session, test_user_id, test_sites, test_goal_time)
-#     #then
 @pytest.mark.order(3)
 def test_add_block_site_version01(db_session):
     #given
@@ -71,9 +46,11 @@ def test_add_block_site_version01(db_session):
     test_goal_time = datetime.now()
 
     #when
-    add_block_sites(
+    test_locked_sites = add_block_sites(
         db_session, test_user_id, test_siteURL, test_goal_time
     )
+    assert test_locked_sites is not None
+    assert len(test_locked_sites) == 2
 @pytest.mark.order(4)
 def test_add_block_site_version02(db_session):
     #given
@@ -82,10 +59,13 @@ def test_add_block_site_version02(db_session):
         # 이미 등록되어 있는 사이트와 등록되어 있지 않은 사이트를 차단하는 경우
     test_siteURL = ["example03.com", "example04.com"]
     #when
-    add_block_sites(
+    test_locked_sites = add_block_sites(
         db_session, test_user_id, test_siteURL, test_goal_time
     )
     #then
+    assert test_locked_sites is not None
+    assert len(test_locked_sites) == 2
+
 
 @pytest.mark.order(5)
 def test_get_blocked_sites(db_session, caplog):
@@ -118,14 +98,13 @@ def test_get_blocked_sites(db_session, caplog):
     assert all(site.url in ["example01.com", "example02.com"]
                 for site in test_sites01)
 
-    
 
-# @pytest.mark.order(6)
-# def test_unblock_sites_by_user(db_session):
-#     #given
-#     test_user_id01 = 1
-#     #when
-#     unblock_sites_by_user(db_session, test_user_id01)
-#     #then
-#     test_sites = get_blocked_sites(db_session, test_user_id01)
-#     assert len(test_sites) == 0
+@pytest.mark.order(6)
+def test_unblock_sites_by_user(db_session):
+    #given
+    test_user_id01 = 1
+    #when
+    unblock_sites_by_user(db_session, test_user_id01)
+    #then
+    test_sites = get_blocked_sites(db_session, test_user_id01)
+    assert len(test_sites) == 0

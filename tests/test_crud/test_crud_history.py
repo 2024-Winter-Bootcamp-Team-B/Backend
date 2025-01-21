@@ -1,15 +1,9 @@
+import pytz
+
 from datetime import datetime, timedelta
 from app.database import Base
 from tests.conftest import reset_database
 from app.crud.history import add_history, get_histories, update_history
-import pytz
-
-"""
-테스트 해야할 것 
-1. add_history
-2. get_histories
-3. update_hisory
-"""
 
 def test_add_history(db_session):
     reset_database(db_session,Base.metadata)

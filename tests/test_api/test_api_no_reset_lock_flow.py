@@ -1,27 +1,13 @@
-from datetime import datetime, timedelta
-from fastapi.testclient import TestClient
 import pytest
 
+from fastapi.testclient import TestClient
 from app.crud.lock import get_blocked_sites
-from app.crud.site import add_site, get_most_blocked_site
 from app.crud.user import add_user, get_user_by_id
 from app.main import app
 from tests.conftest import reset_database
 from app.database import Base
+
 client = TestClient(app)
-
-"""
-테스트 해야할 것 
-1. user_statistic(request_user_id: int, db: Session = Depends(get_db))
-response = client.post(
-        "/user/login-g", 
-        json={
-            "login_id" : test_login_id,
-            "login_password" : test_login_password
-        }
-    )
-"""
-
 
 @pytest.mark.order(1)
 def test_most_locked_site_v1(db_session):
@@ -106,7 +92,6 @@ def test_user_blocked_sites(db_session):
     """
     #given
     request_test_user_id = 1
-    test_user = get_user_by_id(db_session,1)
     sites = get_blocked_sites(db_session, request_test_user_id)
     #when
     response = client.get(f"/lock/blocked-site/{request_test_user_id}")
@@ -114,4 +99,3 @@ def test_user_blocked_sites(db_session):
     assert response.status_code == 200
     assert response.json()["user_id"] == request_test_user_id
     assert sites is not None
-    
