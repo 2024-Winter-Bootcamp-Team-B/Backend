@@ -1,18 +1,6 @@
 from tests.conftest import reset_database
 from app.crud.user import *
 from app.database import Base
-"""
-테스트 해야할 것 
-1. get_user_by_email
-2. add_user
-3. get_user_by_id
-"""
-
-"""
-#given
-#when
-#then
-"""
 
 def test_user_all(db_session):
     reset_database(db_session,Base.metadata)

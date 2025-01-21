@@ -25,8 +25,7 @@ def test_setting_lock_data(db_session):
     test_sites = ["youtube.com","instagram.com"]
     test_locked = add_block_sites(db_session, test_user.id, test_sites, datetime.now())
 
-
-
+    #then
     assert test_user is not None
     assert test_user.id == 1
     assert test_locked is not None
@@ -38,7 +37,6 @@ def test_uplockflow():
     #given
     test_user_id = 1
     test_image_path = "image/11111.jpg"
-    
     #when
     try :
         with open(test_image_path, "rb") as test_image :
