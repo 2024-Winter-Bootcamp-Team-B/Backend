@@ -1,12 +1,15 @@
 version: "3.8"
 
+volumes:
+  db_data:  # MySQL 데이터 볼륨
+
 services:
   # FastAPI 서버
   fastapi:
     build:
       context: .  # Dockerfile의 위치를 지정
       dockerfile: Dockerfile
-    container_name: fastapi_server
+    container_name: fastapi
     volumes:
       - .:/app
       - ./uploaded_images:/app/uploaded_images  # 로컬 루트 디렉토리의 uploaded_images와 컨테이너 내부 경로를 매핑
@@ -31,6 +34,12 @@ services:
     ports:
       - "5672:5672"  # AMQP 포트
       - "15672:15672"  # RabbitMQ 관리 콘솔 포트
+      - "15692:15692" #metrics 포트
+    restart: always # 연결 끊어질시 다시 시작용
+    tty: true # 끊어짐 방지
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest #레빗엠큐 유저
+      - RABBITMQ_DEFAULT_PASS=guest #레빗엠큐 비번
 
   # MySQL DB
   mysql:
@@ -38,41 +47,67 @@ services:
     container_name: mysql
     ports:
       - "3306:3306"
-    # environment:
-    #   MYSQL_ROOT_PASSWORD: root_password
-    #   MYSQL_DATABASE: focus_db
-    #   MYSQL_USER: techeer
-    #   MYSQL_PASSWORD: techeer20250201
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - db_data:/var/lib/mysql #디비 볼륨
     env_file:
       - .env
 
+  mysql-exporter: #서비스 이름
+    image: prom/mysqld-exporter:main #이미지
+    container_name: mysql-exporter
+    ports:
+      - "9104:9104" #포트 9104 매핑
+    volumes:
+      - ./mysql-exporter/my-config.conf:/cfg/my-config.conf #conf파일을 위한 로컬 볼륨 마운트
+    environment: # 메트릭 수집할 내용 & 데이터 주소
+      - DATA_SOURCE_NAME='techeer:$techeer20250201@tcp(mysql:3306)/focus_db' # rds로 올렸으면 이 부분은 다른 서비스들에서 디비 연결 하는걸로 사용. (루트 미사용시 수집되는 메트릭이 다를 수 있음)
+      - collect.info_schema.tablestats=true
+      - collect.info_schema.userstats=true
+      - collect.info_schema.query_response_time=true
+      - collect.auto_increment.columns=true
+      - collect.binlog_size=true
+      - collect.perf_schema.eventsstatements=true
+      - collect.perf_schema.eventswaits=true
+      - collect.perf_schema.file_events=true
+      - collect.perf_schema.indexiowaits=true
+      - collect.perf_schema.tableiowaits=true
+      - collect.perf_schema.tablelocks=true
+    depends_on:
+      - mysql #디비가 올라가야지 메트릭 수집 가능
+    command:
+      - '--config.my-cnf=/cfg/my-config.conf' #로컬 볼륨에 마운트된 conf파일 설정
+
   # Celery 워커
-  celery:
+  celery-worker:
     image: python:3.10-slim
-    container_name: celery_worker
+    container_name: celery-worker
+    restart: always #redis, rabbitmq 연결용 재시작
     volumes:
       - .:/app
       - ./uploaded_images:/app/uploaded_images  # 로컬 루트 디렉토리의 uploaded_images와 컨테이너 내부 경로를 매핑
-
+    ports:
+      - '5555:5555' #5555 포트 매핑
     working_dir: /app
-    command: >
-      sh -c "apt-get update &&
-             apt-get install -y libgl1 libglib2.0-0 libmariadb-dev gcc pkg-config &&
-             pip install --no-cache-dir -r requirements.txt &&
-             celery -A app.celery_app worker --loglevel=info"
-    #    environment:
+    command: sh -c "sh start_celery_flower.sh" # 스크립 파일 실행
+#   environment:
 #      - BROKER_URL=amqp://guest:guest@rabbitmq//
 #      - RESULT_BACKEND=db+mysql://celery_user:celery_password@mysql/celery_db
     environment:
       - PYTHONPATH=/app
+      - CELERY_BROKER_API_URL=http://guest:guest@rabbitmq:15672/api/ # celery api url. 이거 설정 해야지 셀러리 broker부분이 보임
+      - CELERY_BROKER_URL=amqp://guest:guest@rabbitmq:5672/ # 브로커 url
     env_file:
       - .env
-
     depends_on:
       - rabbitmq
       - mysql
       - fastapi
-      
+
   tests:
     build:
       context: .
@@ -81,3 +116,75 @@ services:
     command: pytest -s tests
     environment:
       TESTING: "TRUE"
+
+############################################################################################################## 모니터링 서비스 추가
+
+  cadvisor: #서비스 이름
+    image: gcr.io/cadvisor/cadvisor:latest # 이미지 이름
+    container_name: cadvisor # 컨테이너 이름
+    privileged: true
+    ports:
+      - "8080:8080" # 포트 8080매핑
+    volumes:
+      - /:/rootfs:ro  # 읽기 전용 데이터 - 루트파일 시스템
+      - /var/run:/var/run:rw  # 읽기&쓰기 - 런타임데이터
+      - /sys:/sys:ro  # 읽기 전용 데이터 - 커널, 하드웨어, 드라이버 정보 등등
+      - /var/lib/docker/:/var/lib/docker:ro # 읽기 전용 데이터, 도커 정보 데이터
+      - /etc/machine-id:/etc/machine-id:ro # 읽기 전용 데이터, 머신 아이디
+    depends_on:
+      - prometheus
+      
+  prometheus: # 서비스이름
+    image: prom/prometheus:latest # 이미지 이름
+    container_name: prometheus # 컨테이너 이름
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml # 로컬에 존재하는 prometheus.yml을 컨테이너에 추가를 위한것
+      - ./prometheus/alert-rules.yml:/etc/prometheus/alert-rules.yml # 로컬에 존재하는 alert-rules.yml을 컨테이너에 추가를 위한것
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml' # 프로메테우스를 실행할떄 prometheus.yml에 있는데로 실행해 달라는것
+    ports:
+      - "9090:9090" # 포트 9090매핑
+      
+  grafana: # 서비스 이름
+    image: grafana/grafana:latest # 이미지 이름
+    container_name: grafana # 컨테이너 이름
+    volumes: # 이제 데이터를 저장을 해 주어야 하는데 
+      - ./grafana/datasources:/etc/grafana/provisioning/datasources/ # grafana를 하면 datasource 대이터 소스들을 저장하고 도커랑 공유한다는것이다.
+      - ./grafana/dashboards:/etc/grafana/provisioning/dashboards/ # 이것도 대시보드를 도커랑 공유한다는것이다.
+    ports:
+      - "3000:3000" # 포트 3000매핑
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    depends_on:
+      - prometheus
+
+  nginx: # 실제 요청을 처리하고 웹 서버의 역할을 담당하며, nginx-exporter의 데이터를 제공
+    image: nginx:stable
+    container_name: nginx
+    ports:
+      - "80:80"
+    #  - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./certbot/conf:/etc/letsencrypt
+    #  - ./certbot/www:/var/www/certbot
+
+  nginx-exporter: # 모니터링을 위한 보조 컨테이너로, Prometheus와 연동하여 NGINX의 메트릭 데이터를 수집.
+    image: nginx/nginx-prometheus-exporter:latest
+    container_name: nginx-exporter
+    ports:
+      - "9113:9113"
+    command: --nginx.scrape-uri=http://nginx:80/stub_status
+    depends_on:
+      - nginx
+
+  alertmanager: #이미지
+    image: prom/alertmanager:main
+    container_name: alertmanager
+    ports:
+      - "9093:9093" #포트 9093 매핑
+    volumes:
+      - ./alertmanager/alertmanager.yml:/etc/alertmanager/alertmanager.yml #설정파일 볼륨 추가
+      - ./alertmanager/tmp:/data/ #데이터 담기 전용 볼륨 추가
+    command: --config.file=/etc/alertmanager/alertmanager.yml --log.level=debug #설정파일 설정
