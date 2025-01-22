@@ -9,6 +9,7 @@ from app.routers.block_api import router as block_router
 from app.routers.unblock_api import router as unblock_router
 from app.routers.save_analysis_api import router as analysis_router
 from fastapi.middleware.cors import CORSMiddleware
+from prometheus_fastapi_instrumentator import Instrumentator
 
 
 from app.database import engine, Base
@@ -38,6 +39,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+Instrumentator().instrument(app).expose(app)
 
 # .env에서 SECRET_KEY 가져오기
 secret_key = os.getenv("SECRET_KEY")

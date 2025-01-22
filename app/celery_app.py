@@ -8,8 +8,8 @@ import re
 # Celery 앱 객체 생성
 celery_app = Celery(
     "app",  # 앱 이름
-    broker="amqp://guest:guest@rabbitmq//",  # RabbitMQ URL
-    # backend="db+mysql://celery_user:celery_password@mysql/celery_db"  # MySQL URL
+    broker=os.getenv("CELERY_BROKER_URL", "amqp://guest:guest@rabbitmq:5672/")
+    # backend = "db+mysql://celery_user:celery_password@mysql/celery_db"  # MySQL URL
 )
 
 # Celery 기본 설정
@@ -83,11 +83,11 @@ def process_image_task(image_path: str, requested_hand_shape: list):
             # else:
             #     print(f"[INFO] 예상치 못한 응답 상태 코드: {response.status_code}")
 
-            response.raise_for_status()  # 요청 에러 발생 시 예외 처리
-
             # 요청 성공 시 로그 추가
             print(f"POST request to /photo/result successful: {response.status_code}")
             print(f"Response content: {response.json()}")
+
+            response.raise_for_status()  # 요청 에러 발생 시 예외 처리
 
         except requests.RequestException as e:
             # 요청 실패 시 로그 추가

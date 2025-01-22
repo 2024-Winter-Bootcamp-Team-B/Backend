@@ -25,3 +25,5 @@ requests
 authlib
 httpx
 itsdangerous
+prometheus-fastapi-instrumentator
+flower==1.2.0
