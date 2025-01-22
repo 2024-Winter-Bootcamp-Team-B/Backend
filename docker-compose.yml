@@ -108,18 +108,29 @@ services:
       - mysql
       - fastapi
 
+  tests:
+    build:
+      context: .
+    depends_on:
+      - fastapi
+    command: pytest -s tests
+    environment:
+      TESTING: "TRUE"
+
 ############################################################################################################## 모니터링 서비스 추가
 
   cadvisor: #서비스 이름
     image: gcr.io/cadvisor/cadvisor:latest # 이미지 이름
     container_name: cadvisor # 컨테이너 이름
+    privileged: true
     ports:
       - "8080:8080" # 포트 8080매핑
     volumes:
       - /:/rootfs:ro  # 읽기 전용 데이터 - 루트파일 시스템
-      - /var/run:/var/run:ro  # 읽기&쓰기 - 런타임데이터
+      - /var/run:/var/run:rw  # 읽기&쓰기 - 런타임데이터
       - /sys:/sys:ro  # 읽기 전용 데이터 - 커널, 하드웨어, 드라이버 정보 등등
       - /var/lib/docker/:/var/lib/docker:ro # 읽기 전용 데이터, 도커 정보 데이터
+      - /etc/machine-id:/etc/machine-id:ro # 읽기 전용 데이터, 머신 아이디
     depends_on:
       - prometheus
       
