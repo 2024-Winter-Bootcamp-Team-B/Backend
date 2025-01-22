@@ -13,6 +13,9 @@ RUN apt-get update && apt-get install -y \
 # 프로젝트 파일 복사
 COPY . /app
 
+# Celery Worker 실행 스크립트 실행 권한 부여
+RUN chmod +x start_celery_flower.sh
+
 # Python 패키지 설치
 RUN pip install --no-cache-dir -r requirements.txt
 

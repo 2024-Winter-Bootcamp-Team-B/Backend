@@ -26,3 +26,5 @@ authlib
 httpx
 itsdangerous
 pytest-order
+prometheus-fastapi-instrumentator
+flower==1.2.0
