@@ -32,7 +32,9 @@ async def user_statistic(request_user_id: int, db: Session = Depends(get_db)):
             {
                 "date": stat.date,
                 "goal": stat.goal,
-                "actual" : stat.actual
+                "actual" : stat.actual,
+                "goal_min" : stat.goal_min,
+                "actual_min" : stat.actual_min
             }
             for stat in result_stat
         ]

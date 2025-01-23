@@ -10,7 +10,8 @@ class HistoryStat:
         self.date = date
         self.goal = goal # 문자열로 된 목표 시간 (예: "2:30").
         self.actual = actual # 문자열로 된 실제 시간 (예: "2:15").
-
+        self.goal_min = ""
+        self.actual_min = ""
 
     def setting_date(self, date : datetime):
         """
@@ -45,6 +46,12 @@ class HistoryStat:
         actual_hours, actual_minutes = divmod(total_actual_minutes, 60)  # 분을 시간과 분으로 변환
         self.actual = f"{actual_hours}:{actual_minutes:02}"  # 두 자리 형식 유지
 
+    def convert_time(self):
+        g_time = list(map(int, self.goal.split(":")))  # 문자열 -> 정수 리스트
+        a_time = list(map(int, self.actual.split(":")))  # 문자열 -> 정수 리스트
+
+        self.goal_min = f"{g_time[0]*60 + g_time[1]}"
+        self.actual_min = f"{ a_time[0]*60 + a_time[1]}"
 
 def get_stat_result(list : List[History], today : datetime):
     """
@@ -108,6 +115,8 @@ def get_stat_result(list : List[History], today : datetime):
                 )
             
     for stat in result_stat:
+        stat.convert_time()
         print(f"Date: {stat.date}, Goal: {stat.goal}, Actual: {stat.actual}")
 
     return result_stat
+
