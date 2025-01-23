@@ -197,7 +197,7 @@ async def user_login(request : Request, db : Session = Depends(get_db)):
     user = login_process(db, request_login_id, request_login_password)
     
     if user is None :
-        raise HTTPException(status_code=400, detail="아이디 혹은 비밀번호 오류")
+        raise HTTPException(status_code=200, detail="아이디 혹은 비밀번호 오류")
     
     request.session["user_id"] = user.id
     

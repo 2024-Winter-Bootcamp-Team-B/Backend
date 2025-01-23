@@ -4,8 +4,7 @@
 import os
 
 from sqlalchemy import StaticPool, create_engine
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker,declarative_base
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -21,7 +20,7 @@ db = os.getenv("DB_NAME")
 if os.getenv("TESTING") == "TRUE":
     # SQLite 메모리 데이터베이스
     engine = create_engine( 
-        "sqlite://",
+        "sqlite:///:memory:",
         connect_args={"check_same_thread": False},
         poolclass=StaticPool,
     )  

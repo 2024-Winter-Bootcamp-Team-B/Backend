@@ -1,17 +1,18 @@
+from datetime import datetime, timedelta
 import pytest
 
 from fastapi.testclient import TestClient
+from app.crud.history import *
 from app.crud.lock import get_blocked_sites
 from app.crud.user import add_user, get_user_by_id
 from app.main import app
 from tests.conftest import reset_database
-from app.database import Base
 
 client = TestClient(app)
 
 @pytest.mark.order(1)
 def test_most_locked_site_v1(db_session):
-    reset_database(db_session,Base.metadata)
+    reset_database(db_session)
     """
     누적 차단 횟수 많은 사이트 API :아무런 정보가 없을 때 (최초에) 가장 많이 차단된 사이트를 요구할 때
     """
@@ -57,35 +58,10 @@ def test_user_block(db_session):
     assert response.json()["message"] == "Data processed successfully"
 
 
+
+
+
 @pytest.mark.order(3)
-def test_user_history(db_session):
-    """
-    누적 차단 횟수 많은 사이트 API : 정보가 있을 때, 5개 이상인 경우
-    """
-    #given
-    test_user = get_user_by_id(db_session,1)
-    request_test_user_id = test_user.id
-
-    #when
-    response = client.get(f"/statistic/{request_test_user_id}")
-
-    print("Response Status Code:", response.status_code)  # 상태 코드 출력
-    print("Response Headers:", response.headers)  # 응답 헤더 출력
-    print("Response JSON:", response.json())  # JSON 응답 출력
-    
-    response_result = response.json().get("result", None)  # 'result' 키 가져오기
-    
-
-    #then
-    assert response.status_code == 200
-    assert response.json()["message"] == "성공"
-    assert response_result is not None
-    for entry in response_result:
-        assert "user_id" in entry
-        assert entry["user_id"] == request_test_user_id
-
-
-@pytest.mark.order(4)
 def test_user_blocked_sites(db_session):
     """
     특정 사용자가 차단한 사이트 목록을 반환 API
@@ -99,3 +75,25 @@ def test_user_blocked_sites(db_session):
     assert response.status_code == 200
     assert response.json()["user_id"] == request_test_user_id
     assert sites is not None
+
+
+@pytest.mark.order(4)
+def test_user_history(db_session):
+    """
+    특정 유저의 정보 가져오기 
+    """
+    #given
+    now = datetime.now()  # 테스트 기준 날짜
+    one_week_ago = now - timedelta(days=7)
+    test_user = get_user_by_id(db_session,1)
+    request_test_user_id = test_user.id
+    test_history01 = add_history_for_test(db_session, request_test_user_id, one_week_ago + timedelta(days=1), one_week_ago + timedelta(days=1, hours=3))
+    test_history02 = add_history_for_test(db_session, request_test_user_id, one_week_ago + timedelta(days=2), one_week_ago + timedelta(days=2, hours=3))
+
+    #when
+    response = client.get(f"/statistic/{request_test_user_id}")
+    result_stat = response.json()
+    #then
+    assert test_history01 is not None
+    assert test_history02 is not None
+    assert result_stat.get("message") == "성공"

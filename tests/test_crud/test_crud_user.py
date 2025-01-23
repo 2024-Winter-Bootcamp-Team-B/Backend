@@ -1,9 +1,8 @@
 from tests.conftest import reset_database
 from app.crud.user import *
-from app.database import Base
 
 def test_user_all(db_session):
-    reset_database(db_session,Base.metadata)
+    reset_database(db_session)
     #given
     test_login_id = "test01"
     test_login_password = "test01"
