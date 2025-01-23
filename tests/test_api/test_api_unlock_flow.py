@@ -7,7 +7,7 @@ from app.crud.site import *
 from app.crud.user import *
 from app.main import app
 from tests.conftest import reset_database
-from app.database import Base
+
 
 client = TestClient(app)
 
@@ -16,7 +16,7 @@ def test_setting_lock_data(db_session):
     """
     unlock flow 테스트
     """
-    reset_database(db_session,Base.metadata)
+    reset_database(db_session)
 
     #given
         #User
@@ -46,13 +46,13 @@ def test_uplockflow():
                 files = {"file" : ("11111.jpg", test_image, "image/jpeg")}
             )
             # 상태 코드 출력
-            print("Status Code at TESTING :", response.status_code)
+            print("Status Code at unlock - TESTING :", response.status_code)
             response_json = response.json()
             # JSON 응답 출력
             try:
-                print("Response JSON at TESTING :", response.json())
+                print("Response JSON at unlock - TESTING :", response.json())
             except Exception as e:
-                print("Error parsing JSON response at TESTING :", str(e))
+                print("Error parsing JSON response at unlock - TESTING :", str(e))
     except FileNotFoundError :
         print("파일 못 찾는다")
         

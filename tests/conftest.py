@@ -7,14 +7,8 @@ from app.database import Base, get_db, engine as default_engine
 from app.main import app
 
 
-# 테스트용 엔진과 세션 설정
-if os.getenv("TESTING") == "TRUE":
-    TEST_ENGINE = create_engine(
-        "sqlite:///:memory:",
-        connect_args={"check_same_thread": False},
-    )
-else:
-    TEST_ENGINE = default_engine  # 실제 데이터베이스 설정 사용
+# database.py에서 설정된 데이터파일 가져오기 
+TEST_ENGINE = default_engine  
 
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=TEST_ENGINE)
 
@@ -41,35 +35,26 @@ def db_session():
         db.close()
 
 
-@pytest.fixture(scope="function")
+
+@pytest.fixture(scope="session")
 def client(db_session):
     """FastAPI 클라이언트와 DB 의존성 오버라이드 설정"""
     def override_get_db():
-        try:
-            yield db_session
-        finally:
-            db_session.close()
+        yield db_session  # 테스트 세션을 사용
 
     app.dependency_overrides[get_db] = override_get_db
     return TestClient(app)
-
 
 @pytest.fixture(scope="session", autouse=True)
 def set_testing_env():
     os.environ["TESTING"] = "TRUE"
 
 
-def reset_database(session: Session, metadata: Base.metadata):
-    """
-    데이터베이스를 초기화하는 함수.
-    스키마를 삭제하고 다시 생성합니다.
-
-    :param session: SQLAlchemy Session 객체
-    :param metadata: SQLAlchemy Base.metadata 객체
-    """
+def reset_database(session: Session):
+    """데이터베이스를 초기화하는 함수."""
     print("Resetting database...")
     # 기존 테이블 삭제
-    metadata.drop_all(bind=TEST_ENGINE)
+    Base.metadata.drop_all(bind=TEST_ENGINE)
     # 새 테이블 생성
-    metadata.create_all(bind=TEST_ENGINE)
+    Base.metadata.create_all(bind=TEST_ENGINE)
     print("Database reset complete.")
