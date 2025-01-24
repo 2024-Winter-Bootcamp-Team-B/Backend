@@ -4,6 +4,7 @@ from datetime import datetime
 from uuid import uuid4
 import os # os, shutil: 파일 저장 및 관리에 사용
 import shutil
+import json  # JSON 파싱을 위해 import
 from app.services.mediapipe_service import analyze_image # analyze_image: Mediapipe 로직이 구현된 서비스 모듈을 가져옴
 from app.celery_app import process_image_task  # Celery 작업 불러오기
 from fastapi import Form
@@ -14,7 +15,7 @@ router = APIRouter()
 UPLOAD_DIR = "uploaded_images"
 
 @router.post("/lock/upload-image")
-async def upload_image(user_id: int = Form(...) , file: UploadFile = File(...)):
+async def upload_image(user_id: int = Form(...), hand_shape: str = Form(...), file: UploadFile = File(...)):
     """
     고유 파일명을 생성하여 저장하고, 파일 경로를 반환. 파일 삭제는 별도 처리에서 호출.
     """
@@ -45,7 +46,8 @@ async def upload_image(user_id: int = Form(...) , file: UploadFile = File(...)):
 
         # Celery 작업 호출 -> 아무리 봐도 셀러리 작업을 여기서 호출하는게 맞는거 같음
 
-        requested_hand_shape = [1, 1, 1, 1, 1]  # 예: 다섯 손가락 모두 펴짐 
+        # requested_hand_shape = [1, 1, 1, 1, 1]  # 예: 다섯 손가락 모두 펴짐 
+        requested_hand_shape = json.loads(hand_shape)  # JSON 문자열을 Python 리스트로 변환
         print("TEST 02")
         ###### 이거는 나중에 수정해야함 -> 프론트에서 넘어온 값으로
         task = process_image_task.delay(file_path, requested_hand_shape)
