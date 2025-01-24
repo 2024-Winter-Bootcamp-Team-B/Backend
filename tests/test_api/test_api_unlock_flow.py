@@ -37,12 +37,17 @@ def test_uplockflow():
     #given
     test_user_id = 1
     test_image_path = "image/11111.jpg"
+    test_hand_shape = "[1, 0, 1, 1, 0]"  # 예: JSON 문자열로 손 모양 값 전달
+
     #when
     try :
         with open(test_image_path, "rb") as test_image :
             response = client.post(
                 "/lock/upload-image",
-                data = {"user_id" : test_user_id},
+                data = {
+                    "user_id" : test_user_id,
+                    "hand_shape": test_hand_shape  # hand_shape 추가
+                },
                 files = {"file" : ("11111.jpg", test_image, "image/jpeg")}
             )
             # 상태 코드 출력
