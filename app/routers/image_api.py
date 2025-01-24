@@ -8,7 +8,7 @@ import json  # JSON 파싱을 위해 import
 from app.services.mediapipe_service import analyze_image # analyze_image: Mediapipe 로직이 구현된 서비스 모듈을 가져옴
 from app.celery_app import process_image_task  # Celery 작업 불러오기
 from fastapi import Form
-
+from celery.result import AsyncResult
 
 router = APIRouter()
 
@@ -52,6 +52,7 @@ async def upload_image(user_id: int = Form(...), hand_shape: str = Form(...), fi
         ###### 이거는 나중에 수정해야함 -> 프론트에서 넘어온 값으로
         task = process_image_task.delay(file_path, requested_hand_shape)
         print("TEST 03")
+        
         return {
             "message": "File uploaded and analysis started",
             "file_path": file_path,
@@ -62,3 +63,5 @@ async def upload_image(user_id: int = Form(...), hand_shape: str = Form(...), fi
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error while processing the file: {str(e)}")
+    
+

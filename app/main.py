@@ -8,6 +8,7 @@ from app.routers.login_api import router as login_router
 from app.routers.block_api import router as block_router
 from app.routers.unblock_api import router as unblock_router
 from app.routers.save_analysis_api import router as analysis_router
+from app.routers.task_id_api import router as task_id_router
 from fastapi.middleware.cors import CORSMiddleware
 from prometheus_fastapi_instrumentator import Instrumentator
 
@@ -69,6 +70,8 @@ app.include_router(analysis_router, tags=["Analysis"])
 app.include_router(unblock_router, tags=["Blocked Sites Clear"])
 
 app.include_router(history_router , tags=["History"])
+
+app.include_router(task_id_router, tags=["Task ID"])
 
 
 

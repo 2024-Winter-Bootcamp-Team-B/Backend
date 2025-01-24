@@ -8,8 +8,9 @@ import re
 # Celery 앱 객체 생성
 celery_app = Celery(
     "app",  # 앱 이름
-    broker=os.getenv("CELERY_BROKER_URL", "amqp://guest:guest@rabbitmq:5672/")
-    # backend="db+mysql://celery_user:celery_password@mysql/celery_db"  # MySQL URL
+    broker=os.getenv("CELERY_BROKER_URL", "amqp://guest:guest@rabbitmq:5672/"),
+    backend=os.getenv("CELERY_RESULT_BACKEND", "redis://redis:6379/0")
+    # backend="db+mysql://guest:guest@mysql/celery_db"  # MySQL URL
 )
 
 # Celery 기본 설정

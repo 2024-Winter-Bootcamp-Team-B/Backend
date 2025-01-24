@@ -41,6 +41,12 @@ services:
       - RABBITMQ_DEFAULT_USER=guest #레빗엠큐 유저
       - RABBITMQ_DEFAULT_PASS=guest #레빗엠큐 비번
 
+  redis:
+    image: redis:latest
+    container_name: redis
+    ports:
+      - "6379:6379"
+
   # MySQL DB
   mysql:
     image: mysql:8.0

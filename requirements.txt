@@ -28,3 +28,4 @@ itsdangerous
 pytest-order
 prometheus-fastapi-instrumentator
 flower==1.2.0
+celery[redis]
