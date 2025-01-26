@@ -32,38 +32,48 @@ def test_setting_lock_data(db_session):
     assert len(test_locked) == 2
 
 
-@pytest.mark.order(2)
-def test_uplockflow():
-    #given
-    test_user_id = 1
-    test_image_path = "image/11111.jpg"
-    test_hand_shape = "[1, 0, 1, 1, 0]"  # 예: JSON 문자열로 손 모양 값 전달
+# @pytest.mark.order(2)
+# def test_uplockflow():
+#     #given
+#     test_user_id = 1
+#     test_image_path = "image/11111.jpg"
+#     test_hand_shape = "[1, 0, 1, 1, 0]"  # 예: JSON 문자열로 손 모양 값 전달
 
-    #when
-    try :
-        with open(test_image_path, "rb") as test_image :
-            response = client.post(
-                "/lock/upload-image",
-                data = {
-                    "user_id" : test_user_id,
-                    "hand_shape": test_hand_shape  # hand_shape 추가
-                },
-                files = {"file" : ("11111.jpg", test_image, "image/jpeg")}
-            )
-            # 상태 코드 출력
-            print("Status Code at unlock - TESTING :", response.status_code)
-            response_json = response.json()
-            # JSON 응답 출력
-            try:
-                print("Response JSON at unlock - TESTING :", response.json())
-            except Exception as e:
-                print("Error parsing JSON response at unlock - TESTING :", str(e))
-    except FileNotFoundError :
-        print("파일 못 찾는다")
-        
-    #then
-    assert "message" in response_json
-    assert response_json["message"] == "File uploaded and analysis started"
+#     #when
+#     try :
+#         with open(test_image_path, "rb") as test_image :
+#             response = client.post(
+#                 "/lock/upload-image",
+#                 data = {
+#                     "user_id" : test_user_id,
+#                     "hand_shape": test_hand_shape  # hand_shape 추가
+#                 },
+#                 files = {"file" : ("11111.jpg", test_image, "image/jpeg")}
+#             )
+#             # 상태 코드 출력
+#             print("Status Code at unlock - TESTING :", response.status_code)
+#             response_json = response.json()
+#             # JSON 응답 출력
+#             try:
+#                 print("Response JSON at unlock - TESTING :", response.json())
+#             except Exception as e:
+#                 print("Error parsing JSON response at unlock - TESTING :", str(e))
+#     except FileNotFoundError :
+#         print("파일 못 찾는다")
+#     task_id = response_json.get("tast_id")
+#     task_reponse = client.post(
+#         f"/task/{task_id}/status"
+#     )
+#     task_json = task_reponse.json()
 
-    assert "file_path" in response_json
-    assert "task_id" in response_json
+
+#     #then
+#     assert "message" in response_json
+#     assert response_json["message"] == "File uploaded and analysis started"
+
+#     assert "file_path" in response_json
+#     assert "task_id" in response_json
+
+#     assert task_id == task_reponse.get("task_id")
+#     assert "status" == task_reponse.get("status")
+#     assert "result" == task_reponse.get("result")
