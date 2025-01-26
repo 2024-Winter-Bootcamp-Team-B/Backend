@@ -34,6 +34,11 @@ async def post_lock_sites(request: Request, db: Session = Depends(get_db)):
         add_block_sites(db, request_user_id, request_sites, date_format(data["start_time"], True))
         # 차단 기록 남기기
         add_history(db, request_user_id, date_format(data["start_time"], True), date_format(data["goal_time"], True))
+
+
+        ## 자바 스크립트 ... 
+    
+
         # 성공 응답 반환
         return JSONResponse(
             status_code=200,
