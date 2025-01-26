@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from fastapi import APIRouter,Depends, Request
 from fastapi.responses import JSONResponse
 from app.crud.lock import add_block_sites
@@ -11,14 +11,14 @@ router = APIRouter()
 # str으로 받은 거 db에 넣을 수 있게 포맷하는 함수
 def date_format(time: str, type: bool):
     iso_format = "%Y-%m-%dT%H:%M:%S.%fZ"  # ISO 8601 포맷
-    general_format = "%Y-%m-%d %H:%M:%S"  # 일반적인 출력 포맷
+
     
     # 문자열을 datetime 객체로 변환
-    date = datetime.strptime(time, iso_format)
+    date = datetime.strptime(time, iso_format) + timedelta(hours=9)
     
     if type == True:
         return date
-    return time
+    return f"{date}"
 
 
 @router.post("/lock/block")
