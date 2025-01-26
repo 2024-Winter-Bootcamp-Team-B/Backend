@@ -31,7 +31,7 @@ async def post_lock_sites(request: Request, db: Session = Depends(get_db)):
         request_sites = data.get("sites")
 
         # 사이트 차단하기
-        add_block_sites(db, request_user_id, request_sites, date_format(data["start_time"], True))
+        add_block_sites(db, request_user_id, request_sites, date_format(data["goal_time"], True))
         # 차단 기록 남기기
         add_history(db, request_user_id, date_format(data["start_time"], True), date_format(data["goal_time"], True))
 

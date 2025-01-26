@@ -43,9 +43,13 @@ class Locked(Base):
     goal_time = Column(DateTime, nullable=False)
     created_at = Column(DateTime, nullable=False, default=lambda: datetime.now(KST))
     site_id = Column(Integer, ForeignKey("site.id"), nullable=False)
+     # Site와의 관계 정의
+    site = relationship("Site", back_populates="locked_sites")
 
 class Site(Base):
     __tablename__ = "site"
     id = Column(Integer, primary_key=True, index=True, autoincrement=True, nullable=False)
     url = Column(String(300), nullable=False)
     blocked_cnt = Column(Integer, nullable=True, default=0)
+    # Locked와의 관계 정의
+    locked_sites = relationship("Locked", back_populates="site")

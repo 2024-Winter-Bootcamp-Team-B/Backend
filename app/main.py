@@ -12,7 +12,6 @@ from app.routers.task_id_api import router as task_id_router
 from fastapi.middleware.cors import CORSMiddleware
 from prometheus_fastapi_instrumentator import Instrumentator
 
-
 from app.database import engine, Base
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.sessions import SessionMiddleware
@@ -28,6 +27,10 @@ app = FastAPI()
 origins = [
     "http://localhost:5173",
     "http://127.0.0.1:5173"
+    "http://localhost:5174",
+    "http://127.0.0.1:5174",
+    "chrome-extension://klhjebgdjainkellmacilgichiddfeod"  # Chrome 확장 프로그램의 Origin 추가
+
     # 더 추가할 수 있음, 나중에 우리 도메인 추가할 예정
 ]
 

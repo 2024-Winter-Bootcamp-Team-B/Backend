@@ -47,6 +47,6 @@ def read_blocked_sites(user_id: int, db: Session = Depends(get_db)):
     return {
         "message": "Data processed successfully",
         "user_id": user_id,
-        "sites": [site.url.replace("https://", "").replace("http://", "") for site in sites]
+        "sites": [site.site.url.replace("https://", "").replace("http://", "") for site in sites]
         # sites 필드는 URL의 프로토콜(https://, http://)을 제거하고 도메인만 반환하도록 처리
     }
