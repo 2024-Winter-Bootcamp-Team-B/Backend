@@ -3,19 +3,15 @@
     "name": "Site Blocker",
     "version": "1.0",
     "permissions": [
-        "declarativeNetRequest",
+        "declarativeNetRequest", 
         "declarativeNetRequestWithHostAccess",
-        "webRequest",
-        "webRequestBlocking", 
         "storage"
     ],
     "host_permissions": [
-        "*://*/*",
-        ["<all_urls>"]
+        "*://*/*" 
     ],
     "background": {
         "service_worker": "background.js"
     },
-    "description": "DB에 저장된 사이트를 차단하는 Chrome 확장 프로그램"
-
+    "description": "사용자별 차단 사이트를 관리하는 Chrome 확장 프로그램"
 }

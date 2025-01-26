@@ -11,9 +11,9 @@ def get_blocked_sites(db: Session, user_id: int):
     특정 사용자가 차단한 사이트 목록을 반환
     """
     return (
-        db.query(Site) # Site 테이블을 기준으로 데이터를 조회
-        .join(Locked, Locked.site_id == Site.id) # Locked 테이블과 Site 테이블을 조인
-        .filter(Locked.user_id == user_id, Locked.is_deleted == False) # 조인한 결과를 필터링
+        db.query(Locked) # Locked 테이블을 기준으로 데이터를 조회
+        .join(Site)  # Locked와 Site를 조인
+        .filter(Locked.user_id == user_id)  # 특정 user_id에 해당하는 데이터만 조회
         .all() # 조회한 데이터를 리스트로 반환
     )
 
