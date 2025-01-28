@@ -6,7 +6,7 @@ services:
     image: $DOCKER_USERNAME/fastapi_server:latest
     container_name: fastapi_server
     ports:
-      - "8000:8000"
+      - "80:8000"
     env_file:
       - .env
     depends_on:
