@@ -26,7 +26,7 @@ app = FastAPI()
 
 origins = [
     "http://localhost:5173",
-    "http://127.0.0.1:5173"
+    "http://127.0.0.1:5173",
     "http://localhost:5174",
     "http://127.0.0.1:5174",
     "chrome-extension://klhjebgdjainkellmacilgichiddfeod",  # Chrome 확장 프로그램의 Origin 추가
