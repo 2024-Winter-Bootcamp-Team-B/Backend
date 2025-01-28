@@ -29,7 +29,9 @@ origins = [
     "http://127.0.0.1:5173"
     "http://localhost:5174",
     "http://127.0.0.1:5174",
-    "chrome-extension://klhjebgdjainkellmacilgichiddfeod"  # Chrome 확장 프로그램의 Origin 추가
+    "chrome-extension://klhjebgdjainkellmacilgichiddfeod",  # Chrome 확장 프로그램의 Origin 추가
+    "https://www.focus-on-site.com",
+    "https://server.focus-on-site.com",
 
     # 더 추가할 수 있음, 나중에 우리 도메인 추가할 예정
 ]
