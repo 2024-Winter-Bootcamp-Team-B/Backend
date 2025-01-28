@@ -28,6 +28,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.database import get_db
 from app.crud.lock import get_blocked_sites
+from app.models import Site  # Site 모델 가져오기
 
 router = APIRouter()
 
@@ -50,3 +51,17 @@ def read_blocked_sites(user_id: int, db: Session = Depends(get_db)):
         "sites": [site.site.url.replace("https://", "").replace("http://", "") for site in sites]
         # sites 필드는 URL의 프로토콜(https://, http://)을 제거하고 도메인만 반환하도록 처리
     }
+
+
+@router.get("/sites", response_model=list[str])
+def get_all_sites(db: Session = Depends(get_db)):
+    """
+    모든 사이트(url) 목록을 반환하는 API
+    """
+    sites = db.query(Site.url).all()  # Site 테이블에서 URL만 가져오기
+
+    if not sites:
+        raise HTTPException(status_code=404, detail="No sites found")
+
+    return [site[0].replace("https://", "").replace("http://", "") for site in sites]
+    # 사이트 URL에서 "https://" 및 "http://"을 제거하고 도메인만 반환
