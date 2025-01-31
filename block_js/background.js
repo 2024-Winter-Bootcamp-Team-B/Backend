@@ -59,5 +59,5 @@ chrome.runtime.onInstalled.addListener(() => {
     fetchBlockedSites(userId); // 차단 목록 가져오기 및 규칙 추가
 });
 
-// 주기적으로 차단 목록 업데이트 (18초 간격)
-setInterval(() => fetchBlockedSites(userId), 18000);
+// 주기적으로 차단 목록 업데이트 (1.8초 간격)
+setInterval(() => fetchBlockedSites(userId), 1800);

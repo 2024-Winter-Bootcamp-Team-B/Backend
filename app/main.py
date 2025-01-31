@@ -40,7 +40,7 @@ origins = [
 # (FastAPI = 8000번 포트, React = 5173번 포트)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
